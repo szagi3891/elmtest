@@ -12,10 +12,11 @@ view model =
     [ button [ onClick Decrement ] [ text "-" ]
     , div [] [ text (toString model) ]
     , button [ onClick Increment ] [ text "+" ]
+    , button [ onClick Add ] [ text "+10" ]
     ]
 
 
-type Msg = Increment | Decrement
+type Msg = Increment | Decrement | Add
 
 
 update msg model =
@@ -25,3 +26,6 @@ update msg model =
 
     Decrement ->
       model - 1
+
+    Add ->
+      model + 10

@@ -6853,12 +6853,16 @@ var _elm_lang$html$Html_Events$Options = F2(
 var _user$project$Main$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
-		if (_p0.ctor === 'Increment') {
-			return model + 1;
-		} else {
-			return model - 1;
+		switch (_p0.ctor) {
+			case 'Increment':
+				return model + 1;
+			case 'Decrement':
+				return model - 1;
+			default:
+				return model + 10;
 		}
 	});
+var _user$project$Main$Add = {ctor: 'Add'};
 var _user$project$Main$Decrement = {ctor: 'Decrement'};
 var _user$project$Main$Increment = {ctor: 'Increment'};
 var _user$project$Main$view = function (model) {
@@ -6896,6 +6900,16 @@ var _user$project$Main$view = function (model) {
 				_elm_lang$core$Native_List.fromArray(
 					[
 						_elm_lang$html$Html$text('+')
+					])),
+				A2(
+				_elm_lang$html$Html$button,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Events$onClick(_user$project$Main$Add)
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('+10')
 					]))
 			]));
 };
