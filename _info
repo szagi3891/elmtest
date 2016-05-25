@@ -1,2 +1,8 @@
 npm install -g elm
 
+elm-package install elm-lang/html         # Install latest version
+elm-package install elm-lang/html 1.0.0   # Install version 1.0.0
+
+
+http://package.elm-lang.org/packages/evancz/elm-http/3.0.1/Http
+elm-package install elm-lang/http
