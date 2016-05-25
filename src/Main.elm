@@ -58,7 +58,7 @@ view model =
 
 
 type Msg = Increment | Decrement | Add | Reset | Change1 String | Change2 String
-         | Get | Change3 String | ResetGet | GetOk String | GetErr Http.Error
+         | Get | Change3 String | ResetGet | GetOk (String, String) | GetErr Http.Error
 
 
 update msg model =
@@ -92,13 +92,15 @@ update msg model =
         ResetGet ->
             ({model | resp = "..."}, Cmd.none)
         
-        GetOk message ->
-            ({model | resp = message}, Cmd.none)
+        GetOk (url, message) ->
+            ({model | resp = "url : " ++ url ++ "\ncontent: " ++ message}, Cmd.none)
         
         GetErr _ ->
             (model, Cmd.none)
 
 
-commandFromUrl url =  Task.perform GetErr GetOk (Http.getString url)
+commandFromUrl url =  Task.perform GetErr GetOk (Task.map (contextUrl url) (Http.getString url))
+
+contextUrl url = \resp -> (url, resp)
 
 
