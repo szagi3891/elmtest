@@ -6,3 +6,20 @@ elm-package install elm-lang/html 1.0.0   # Install version 1.0.0
 
 http://package.elm-lang.org/packages/evancz/elm-http/3.0.1/Http
 elm-package install elm-lang/http
+
+
+
+/*
+<div class="container">
+    <div class="panel_path">
+        <span class="panel_path_item">.</span>
+    </div>
+    <div class="menu"></div>
+    <div class="panel_content">
+        <div class="panel_left"></div>
+        <div class="panel_right">
+            <button>Edit</button>
+        </div>
+    </div>
+</div>
+*/

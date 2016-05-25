@@ -1,6 +1,6 @@
 import Html exposing (..)
 import Html exposing (div, button, text, br, textarea)
-import Html.Attributes exposing (style)
+import Html.Attributes exposing (style, class)
 import Html.App exposing (beginnerProgram)
 import Html.Events exposing (onClick, onInput)
 import String
@@ -21,8 +21,18 @@ subscriptions model = Sub.none
 
 
 view model =
-  div [] [text "początek"]
-
+    div [class "container"] [
+        div [class "panel_path"] [
+            div [class "panel_path_item"] [text "."]
+        ]
+        , div [class "menu"] []
+        , div [class "panel_content"] [
+            div [class "panel_left"] []
+            , div [class "panel_right"] [
+                button [] [text "Edit"]
+            ]
+        ]
+    ]
 
 type Msg = Show
 
@@ -34,4 +44,5 @@ update msg model =
             (model, Cmd.none)
 
 
+-- Task.mapError : (x -> y) -> Task x a -> Task y a
 
