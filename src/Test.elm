@@ -18,7 +18,7 @@ main = Html.App.program {
 
 -- subscriptions : Model -> Sub Msg
 subscriptions model = Sub.none
-  
+
 
 getStyle model = if (model.message1 == model.message2) then "green" else "red"
 getText model = if (model.message1 == model.message2) then "ok" else "error"
@@ -61,6 +61,7 @@ type Msg = Increment | Decrement | Add | Reset | Change1 String | Change2 String
          | Get | Change3 String | ResetGet | GetOk (String, String) | GetErr Http.Error
 
 
+-- update : Msg Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
         Increment ->
@@ -99,8 +100,10 @@ update msg model =
             (model, Cmd.none)
 
 
+commandFromUrl : String -> Cmd Msg
 commandFromUrl url =  Task.perform GetErr GetOk (Task.map (contextUrl url) (Http.getString url))
 
+contextUrl : String -> (String -> (String, String))
 contextUrl url = \resp -> (url, resp)
 
 

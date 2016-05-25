@@ -1,1 +1,2 @@
-elm-make ./src/Main.elm --output ./static/build/main.elm.js
+elm-make ./src/Test.elm --output ./static/build/test.elm.js
+elm-make ./src/Index.elm --output ./static/build/index.elm.js
