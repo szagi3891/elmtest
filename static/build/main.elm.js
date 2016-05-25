@@ -7232,6 +7232,19 @@ var _user$project$Main$update = F2(
 					{message2: _p0._0});
 		}
 	});
+var _user$project$Main$getLength = function (text) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		' (',
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Basics$toString(
+				_elm_lang$core$String$length(text)),
+			') '));
+};
+var _user$project$Main$getText = function (model) {
+	return _elm_lang$core$Native_Utils.eq(model.message1, model.message2) ? 'ok' : 'error';
+};
 var _user$project$Main$getStyle = function (model) {
 	return _elm_lang$core$Native_Utils.eq(model.message1, model.message2) ? 'green' : 'red';
 };
@@ -7364,7 +7377,16 @@ var _user$project$Main$view = function (model) {
 						A2(
 							_elm_lang$core$Basics_ops['++'],
 							model.message1,
-							A2(_elm_lang$core$Basics_ops['++'], ' --- ', model.message2)))
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_user$project$Main$getLength(model.message1),
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									' --- ',
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										model.message2,
+										_user$project$Main$getLength(model.message2))))))
 					])),
 				A2(
 				_elm_lang$html$Html$div,
@@ -7383,7 +7405,7 @@ var _user$project$Main$view = function (model) {
 				_elm_lang$core$Native_List.fromArray(
 					[
 						_elm_lang$html$Html$text(
-						_elm_lang$core$Native_Utils.eq(model.message1, model.message2) ? 'ok' : 'error')
+						_user$project$Main$getText(model))
 					]))
 			]));
 };
