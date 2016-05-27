@@ -8,7 +8,7 @@ import List
 import Http
 import Task
 
-init_model = { path = ["cos", "dasda"] }
+init_model = { path = ["cos", "dasda", "ddd"] }
 
 main = Html.App.program {
     init = (init_model, Cmd.none),
@@ -25,7 +25,7 @@ view model =
     div [class "container"] [
 
         div [class "panel_path"]
-            (List.map makePathItem (["."] ++ model.path))
+            (List.map makePathItem (enumerate (["."] ++ model.path)))
 
         , div [class "menu"] []
         , div [class "panel_content"] [
@@ -36,23 +36,37 @@ view model =
         ]
     ]
 
-makePathItem name = span [class "panel_path_item"] [text name]
+makePathItem (index, name) = span [class "panel_path_item", onClick (EventPathClick index)] [text name]
 
 makeLeftList = List.map makeLeftListItem ["..", "cosik", "cosik2", "cosik4334"]
-makeLeftListItem name = div [class "left_item", onClick (LeftClick name)] [text name]
+makeLeftListItem name = div [class "left_item", onClick (EventLeftClick name)] [text name]
 
 
+-- numeruje listę od 0 do length-1
+enumerate x = zip [0..(List.length x) - 1] x
 
-type Msg = LeftClick String
+zip : List a -> List b -> List (a,b)
+zip = List.map2 (,)
+
+
+type Msg = EventLeftClick String| EventPathClick Int
 
 
 -- update : Msg Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
-                                                        -- lewe menu kliknięte
-        LeftClick name ->
+    
+                                    -- katalog w górę
+        EventLeftClick ".." ->
+            ({model | path = (List.take (List.length model.path - 1) model.path)}, Cmd.none)
+        
+                                    -- lewe menu kliknięte
+        EventLeftClick name ->
             ({model | path = (model.path ++ [name])}, Cmd.none)
+
+                                    -- przsłączenie ścieżki, na element który został kliknięty
+        EventPathClick index ->
+            ({model | path = List.take index model.path}, Cmd.none)
 
 
 -- Task.mapError : (x -> y) -> Task x a -> Task y a
-
