@@ -23,3 +23,6 @@ elm-package install elm-lang/http
     </div>
 </div>
 */
+
+
+Task.mapError : (x -> y) -> Task x a -> Task y a
