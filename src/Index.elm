@@ -6,10 +6,12 @@ import String
 import List
 import Http
 import Task
+import Dict
 
 
 type alias Model = {
     path : List String,
+    nodes : Dict.Dict String Node,
     logs : List String
     }
 
@@ -30,7 +32,7 @@ subscriptions : Model -> Sub Msg
 subscriptions model = Sub.none
 
 init_model : (Model, Cmd Msg)
-init_model = ({ path = [], logs = [] }, commandGetFromPath [])
+init_model = ({ path = [], nodes = Dict.empty, logs = [] }, commandGetFromPath [])
 
 
 view model =
@@ -83,8 +85,8 @@ update msg model =
         EventPathClick index ->
             ({model | path = List.take index model.path}, Cmd.none)
 
-        GetFromPathErr _ ->
-            ({model | logs = model.logs ++ ["problem z zainicjowaniem"]}, Cmd.none)
+        GetFromPathErr error ->
+            ({model | logs = model.logs ++ ["problem z odpowiedzią http: " ++ (errorToString error)]}, Cmd.none)
         
         GetFromPathOk (path, message) ->
             ({model | logs = model.logs ++ ["odpowiedź z serwera: " ++ message]}, Cmd.none)
@@ -100,3 +102,10 @@ commandGetMakeUrl path = String.join "/" (["/api/get"] ++ path)
 contextUrl : List String -> (String -> (List String, String))
 contextUrl url = \resp -> (url, resp)
 
+errorToString : Http.Error -> String
+errorToString e = case e of
+    Http.Timeout -> "timeout"
+    Http.NetworkError -> "network error"
+    Http.UnexpectedPayload s -> "unexpected payload - " ++ s
+    Http.BadResponse c s -> "bad response - " ++ (toString c) ++ " - " ++ s 
+                    

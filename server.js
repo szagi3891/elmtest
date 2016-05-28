@@ -49,10 +49,8 @@ function getContent(req, res){
 
                     res.send(JSON.stringify({
                         "status" : "ok",
-                        "data" : {
-                            "content" : "",
-                            "content" : list
-                        }
+                        "content" : "",
+                        "child" : list
                     }));
                 }
             });
@@ -61,10 +59,8 @@ function getContent(req, res){
 
             res.send(JSON.stringify({
                 "status" : "ok",
-                "data" : {
-                    "content" : content.toString(),
-                    "child" : []
-                }
+                "content" : content.toString(),
+                "child" : []
             }));
         }
     });
