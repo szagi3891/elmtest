@@ -7,6 +7,8 @@ import List
 import Http
 import Task
 import Dict
+import Json.Decode
+import Json.Decode as Json exposing ((:=))
 
 
 type alias Model = {
@@ -18,6 +20,19 @@ type alias Model = {
 type Node = NodeLoading | NodeContent {content: String, child: List String}
 
 type Msg = EventLeftClick String | EventPathClick Int | GetFromPathErr Http.Error | GetFromPathOk (List String, String)
+
+type alias ResponseGetOk = {
+    status : String,
+    content : String,
+    child : List String
+    }
+
+parseResponseGetOk : Json.Decode.Decoder ResponseGetOk
+parseResponseGetOk = 
+    Json.Decode.object3 ResponseGetOk
+      ("status" := Json.Decode.string)
+      ("content" := Json.Decode.string)
+      ("child" := Json.Decode.list Json.Decode.string)
 
 
 main = Html.App.program {
@@ -32,7 +47,16 @@ subscriptions : Model -> Sub Msg
 subscriptions model = Sub.none
 
 init_model : (Model, Cmd Msg)
-init_model = ({ path = [], nodes = Dict.empty, logs = [] }, commandGetFromPath [])
+init_model =
+    let
+        rootPath = makeDictPath []
+        rootNode = NodeLoading 
+    in
+        ({path = [], nodes = Dict.insert rootPath rootNode Dict.empty, logs = [] }, commandGetFromPath [])
+
+
+makeDictPath : List String -> String
+makeDictPath path = String.join "/" (["."] ++ path)
 
 
 view model =
@@ -46,10 +70,26 @@ view model =
             div [class "panel_left"] (makeLeftList model)
             , div [class "panel_right"] [
                 button [] [text "Edit"]
+                , div [] [text (getContentCurrentNode model)]
             ]
         ]
         , div [class "logs"] (List.map makeLogItem model.logs)
     ]
+
+
+getContentCurrentNode : Model -> String
+getContentCurrentNode model =
+    let
+        currentNode = Dict.get (makeDictPath model.path) model.nodes
+    in
+        case currentNode of
+            Just node ->
+                ( case node of
+                    NodeLoading -> "Ładowanie zawartości ..."
+                    NodeContent {content, child} -> content )
+            Nothing ->
+                "Brak noda"
+
 
 makePathItem (index, name) = span [class "panel_path_item", onClick (EventPathClick index)] [text name]
 
@@ -89,9 +129,24 @@ update msg model =
             ({model | logs = model.logs ++ ["problem z odpowiedzią http: " ++ (errorToString error)]}, Cmd.none)
         
         GetFromPathOk (path, message) ->
-            ({model | logs = model.logs ++ ["odpowiedź z serwera: " ++ message]}, Cmd.none)
+            let 
+                nowy_nod = parseOk message
+                new_nodes = Dict.insert (makeDictPath model.path) nowy_nod model.nodes
+                new_logs = model.logs ++ ["odpowiedź z serwera: " ++ message]
+            in
+                ({model | logs = new_logs, nodes = new_nodes}, Cmd.none)
+
+
+parseOk: String -> Node
+parseOk message = NodeContent {content = ".. coś coś coś ..", child = ["dsadas", "dsa", "21"]}
+--    case Json.decodeString parseResponseGetOk message of
+--        Just objResp -> NodeContent {content = objResp.content, child = objResp.child}
+--        Nothing -> NodeContent {content = ".. coś coś coś ..", child = ["dsadas", "dsa", "21"]}
         
 
+
+-- addLog : Model -> String -> Model
+-- addLog model message = model.logs ++ [message]
 
 commandGetFromPath : List String -> Cmd Msg
 commandGetFromPath path =  Task.perform GetFromPathErr GetFromPathOk (Task.map (contextUrl path) (Http.getString (commandGetMakeUrl path)))
