@@ -1,7 +1,4 @@
-import Html exposing (div, button, text, br, textarea, span)
-import Html.Attributes exposing (style, class)
 import Html.App exposing (program)
-import Html.Events exposing (onClick, onInput)
 import String
 import List
 import Http
@@ -11,6 +8,7 @@ import Json.Decode as Json exposing ((:=))
 import Platform.Cmd
 
 import DataType exposing (..)
+import View exposing (view)
 
 
 main = Html.App.program {
@@ -28,67 +26,6 @@ init_model : (Model, Cmd Msg)
 init_model = ({path = [], nodes = nodeListInit NodeLoading, logs = [] }, commandGetFromPath [])
         
 
-
-
-view model =
-    div [class "container"] [
-
-        div [class "panel_path"]
-            (List.map makePathItem (enumerate (["."] ++ model.path)))
-
-        , div [class "menu"] []
-        , div [class "panel_content"] [
-            div [class "panel_left"] (makeLeftList model)
-            , div [class "panel_right"] [
-                button [] [text "Edit"]
-                , div [] [text (getContentCurrentNode model)]
-            ]
-        ]
-        , div [class "logs"] (List.map makeLogItem model.logs)
-    ]
-
-
-getContentCurrentNode : Model -> String
-getContentCurrentNode model =
-    let
-        currentNode = nodeListGet model.nodes model.path
-    in
-        case currentNode of
-            Just node ->
-                ( case node of
-                    NodeLoading -> "Ładowanie zawartości ..."
-                    NodeContent {content, child} -> content )
-            Nothing ->
-                "Brak noda"
-
-
-makePathItem (index, name) = span [class "panel_path_item", onClick (EventPathClick index)] [text name]
-
-makeLeftList model = 
-
-    let
-        currentNode = nodeListGet model.nodes model.path
-    in
-        case currentNode of
-            Just node ->
-                ( case node of
-                    NodeLoading -> [span [] [text "Ładowanie zawartości"]]
-                    NodeContent {content, child} -> List.map makeLeftListItem ([".."] ++ child) )
-            Nothing ->
-                [ makeLeftListItem "..", span [] [text "Brak noda"]]
-
-
-makeLeftListItem name = div [class "left_item", onClick (EventLeftClick name)] [text name]
-
-makeLogItem line = div [class "logs_line"] [text line]
-
-
--- numeruje listę od 0 do length-1
-enumerate : List a -> List (Int, a)
-enumerate x = zip [0..(List.length x) - 1] x
-
-zip : List a -> List b -> List (a,b)
-zip = List.map2 (,)
 
 
 
@@ -115,7 +52,7 @@ update msg model =
             let 
                 nowy_nod = parseOk message
                 new_nodes = nodeListSet model.nodes model.path nowy_nod
-                new_logs = model.logs ++ ["odpowiedź z serwera: " ++ message]
+                new_logs = model.logs ++ ["odpowiedź z serwera: " ++ (String.join "/" path) ++ " -> " ++ message]
             in
                 afterUpdate ({model | logs = new_logs, nodes = new_nodes}, Cmd.none)
 
@@ -131,7 +68,7 @@ afterUpdate (model, cmd) =
                     NodeLoading -> (model, cmd)
                     NodeContent {content, child} -> (
                         let
-                            (model, cmdList) = initChild model model.path child
+                            (model, cmdList) = initChild model child
                         in
                             (model, Platform.Cmd.batch ([cmd] ++ cmdList))
                     )
@@ -140,7 +77,8 @@ afterUpdate (model, cmd) =
                 (model, cmd)
 
 
-initChild model path child = 
+initChild : Model -> List String -> (Model, List ( Cmd Msg ))
+initChild model child = 
     let
         initChildItem childName (model, cmd) =
             let
