@@ -9,6 +9,7 @@ import Task
 import Dict
 import Json.Decode
 import Json.Decode as Json exposing ((:=))
+import Platform.Cmd
 
 
 type alias Model = {
@@ -20,19 +21,6 @@ type alias Model = {
 type Node = NodeLoading | NodeContent {content: String, child: List String}
 
 type Msg = EventLeftClick String | EventPathClick Int | GetFromPathErr Http.Error | GetFromPathOk (List String, String)
-
-type alias ResponseGetOk = {
-    status : String,
-    content : String,
-    child : List String
-    }
-
-parseResponseGetOk : Json.Decode.Decoder ResponseGetOk
-parseResponseGetOk = 
-    Json.Decode.object3 ResponseGetOk
-      ("status" := Json.Decode.string)
-      ("content" := Json.Decode.string)
-      ("child" := Json.Decode.list Json.Decode.string)
 
 
 main = Html.App.program {
@@ -127,18 +115,18 @@ update msg model =
     
                                     -- katalog w górę
         EventLeftClick ".." ->
-            ({model | path = (List.take (List.length model.path - 1) model.path)}, Cmd.none)
+            afterUpdate ({model | path = (List.take (List.length model.path - 1) model.path)}, Cmd.none)
         
                                     -- lewe menu kliknięte
         EventLeftClick name ->
-            ({model | path = (model.path ++ [name])}, Cmd.none)
+            afterUpdate ({model | path = (model.path ++ [name])}, Cmd.none)
 
                                     -- przsłączenie ścieżki, na element który został kliknięty
         EventPathClick index ->
-            ({model | path = List.take index model.path}, Cmd.none)
+            afterUpdate ({model | path = List.take index model.path}, Cmd.none)
 
         GetFromPathErr error ->
-            ({model | logs = model.logs ++ ["problem z odpowiedzią http: " ++ (errorToString error)]}, Cmd.none)
+            afterUpdate ({model | logs = model.logs ++ ["problem z odpowiedzią http: " ++ (errorToString error)]}, Cmd.none)
         
         GetFromPathOk (path, message) ->
             let 
@@ -146,7 +134,58 @@ update msg model =
                 new_nodes = Dict.insert (makeDictPath model.path) nowy_nod model.nodes
                 new_logs = model.logs ++ ["odpowiedź z serwera: " ++ message]
             in
-                ({model | logs = new_logs, nodes = new_nodes}, Cmd.none)
+                afterUpdate ({model | logs = new_logs, nodes = new_nodes}, Cmd.none)
+
+
+
+afterUpdate (model, cmd) =
+    let
+        currentNode = Dict.get (makeDictPath model.path) model.nodes
+    in
+        case currentNode of
+            Just node -> (
+                case node of
+                    NodeLoading -> (model, cmd)
+                    NodeContent {content, child} -> (
+                        let
+                            (model, cmdList) = initChild model model.path child
+                        in
+                            (model, Platform.Cmd.batch ([cmd] ++ cmdList))
+                    )
+                )
+            Nothing ->
+                (model, cmd)
+
+
+initChild model path child = 
+    let
+        initChildItem childName (model, cmd) =
+            let
+                pathChild = model.path ++ [childName]
+                dictKey = makeDictPath pathChild
+                
+                (nodes, new_cmd) = case (Dict.get dictKey model.nodes) of
+                    Just _ -> (model.nodes, Cmd.none)
+                    Nothing -> (Dict.insert dictKey NodeLoading model.nodes, commandGetFromPath pathChild)                            
+            in
+                ({model | nodes = nodes}, cmd ++ [new_cmd])
+    in
+        List.foldr initChildItem (model, []) child
+
+
+
+type alias ResponseGetOk = {
+    status : String,
+    content : String,
+    child : List String
+    }
+
+parseResponseGetOk : Json.Decode.Decoder ResponseGetOk
+parseResponseGetOk = 
+    Json.Decode.object3 ResponseGetOk
+      ("status" := Json.Decode.string)
+      ("content" := Json.Decode.string)
+      ("child" := Json.Decode.list Json.Decode.string)
 
 
 parseOk: String -> Node
