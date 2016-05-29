@@ -11,17 +11,7 @@ import Json.Decode
 import Json.Decode as Json exposing ((:=))
 import Platform.Cmd
 
-
-type alias Model = {
-    path : List String,
-    nodes : Dict.Dict String Node,
-    logs : List String
-    }
-
-type Node = NodeLoading | NodeContent {content: String, child: List String}
-
-type Msg = EventLeftClick String | EventPathClick Int | GetFromPathErr Http.Error | GetFromPathOk (List String, String)
-
+import DataType exposing ( Model, Node (..), Msg (..) )
 
 main = Html.App.program {
     init = init_model,
