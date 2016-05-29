@@ -10,6 +10,7 @@ import Platform.Cmd
 import DataType exposing (..)
 import View exposing (view)
 
+import Debug
 
 main = Html.App.program {
     init = init_model,
@@ -51,7 +52,7 @@ update msg model =
         GetFromPathOk (path, message) ->
             let 
                 nowy_nod = parseOk message
-                new_nodes = nodeListSet model.nodes model.path nowy_nod
+                new_nodes = nodeListSet model.nodes path nowy_nod
                 new_logs = model.logs ++ ["odpowiedź z serwera: " ++ (String.join "/" path) ++ " -> " ++ message]
             in
                 afterUpdate ({model | logs = new_logs, nodes = new_nodes}, Cmd.none)
@@ -78,20 +79,20 @@ afterUpdate (model, cmd) =
 
 
 initChild : Model -> List String -> (Model, List ( Cmd Msg ))
-initChild model child = 
-    let
-        initChildItem childName (model, cmd) =
-            let
-                pathChild = model.path ++ [childName]
-                
-                (nodes, new_cmd) = case (nodeListGet model.nodes pathChild) of
-                    Just _ -> (model.nodes, Cmd.none)
-                    Nothing -> (nodeListSet model.nodes pathChild NodeLoading, commandGetFromPath pathChild)
-            in
-                ({model | nodes = nodes}, cmd ++ [new_cmd])
-    in
-        List.foldr initChildItem (model, []) child
+initChild model childList = 
+    List.foldr initChildItem (model, []) childList
 
+
+initChildItem : String -> (Model, List ( Cmd Msg )) -> (Model, List ( Cmd Msg ))
+initChildItem childName (model, cmd) =
+    let
+        pathChild = model.path ++ [childName]
+
+        (nodes, new_cmd) = case (nodeListGet model.nodes pathChild) of
+            Just _ -> (model.nodes, Cmd.none)
+            Nothing -> (nodeListSet model.nodes pathChild NodeLoading, commandGetFromPath pathChild)
+    in
+        ({model | nodes = nodes}, cmd ++ [new_cmd])
 
 
 type alias ResponseGetOk = {
@@ -111,17 +112,16 @@ parseResponseGetOk =
 parseOk: String -> Node
 parseOk message = case (Json.decodeString parseResponseGetOk message) of
     Ok objResp -> NodeContent {content = objResp.content, child = objResp.child}
-    Err _ -> NodeContent {content = ".. coś coś coś ..", child = ["dsadas", "dsa", "21"]}
-        
+    Err _ -> NodeContent {content = ".. coś coś coś ..", child = ["dsadas", "dsa", "21"]}       -- TODO - pozbyć się tej głupiej wartości
 
--- parseOk message = NodeContent {content = ".. coś coś coś ..", child = ["dsadas", "dsa", "21"]}
-
-
--- addLog : Model -> String -> Model
--- addLog model message = model.logs ++ [message]
 
 commandGetFromPath : List String -> Cmd Msg
-commandGetFromPath path =  Task.perform GetFromPathErr GetFromPathOk (Task.map (contextUrl path) (Http.getString (commandGetMakeUrl path)))
+commandGetFromPath path =
+    let
+        task_get = Http.getString (commandGetMakeUrl path)
+        task_whit_context = Task.map (contextUrl path) task_get
+    in
+        Task.perform GetFromPathErr GetFromPathOk task_whit_context
 
 commandGetMakeUrl : List String -> String
 commandGetMakeUrl path = String.join "/" (["/api/get"] ++ path)
