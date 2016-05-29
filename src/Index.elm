@@ -6,12 +6,12 @@ import String
 import List
 import Http
 import Task
-import Dict
 import Json.Decode
 import Json.Decode as Json exposing ((:=))
 import Platform.Cmd
 
-import DataType exposing ( Model, Node (..), Msg (..) )
+import DataType exposing (..)
+
 
 main = Html.App.program {
     init = init_model,
@@ -25,16 +25,9 @@ subscriptions : Model -> Sub Msg
 subscriptions model = Sub.none
 
 init_model : (Model, Cmd Msg)
-init_model =
-    let
-        rootPath = makeDictPath []
-        rootNode = NodeLoading 
-    in
-        ({path = [], nodes = Dict.insert rootPath rootNode Dict.empty, logs = [] }, commandGetFromPath [])
+init_model = ({path = [], nodes = nodeListInit NodeLoading, logs = [] }, commandGetFromPath [])
+        
 
-
-makeDictPath : List String -> String
-makeDictPath path = String.join "/" (["."] ++ path)
 
 
 view model =
@@ -58,7 +51,7 @@ view model =
 getContentCurrentNode : Model -> String
 getContentCurrentNode model =
     let
-        currentNode = Dict.get (makeDictPath model.path) model.nodes
+        currentNode = nodeListGet model.nodes model.path
     in
         case currentNode of
             Just node ->
@@ -74,7 +67,7 @@ makePathItem (index, name) = span [class "panel_path_item", onClick (EventPathCl
 makeLeftList model = 
 
     let
-        currentNode = Dict.get (makeDictPath model.path) model.nodes
+        currentNode = nodeListGet model.nodes model.path
     in
         case currentNode of
             Just node ->
@@ -121,7 +114,7 @@ update msg model =
         GetFromPathOk (path, message) ->
             let 
                 nowy_nod = parseOk message
-                new_nodes = Dict.insert (makeDictPath model.path) nowy_nod model.nodes
+                new_nodes = nodeListSet model.nodes model.path nowy_nod
                 new_logs = model.logs ++ ["odpowiedź z serwera: " ++ message]
             in
                 afterUpdate ({model | logs = new_logs, nodes = new_nodes}, Cmd.none)
@@ -130,7 +123,7 @@ update msg model =
 
 afterUpdate (model, cmd) =
     let
-        currentNode = Dict.get (makeDictPath model.path) model.nodes
+        currentNode = nodeListGet model.nodes model.path
     in
         case currentNode of
             Just node -> (
@@ -152,11 +145,10 @@ initChild model path child =
         initChildItem childName (model, cmd) =
             let
                 pathChild = model.path ++ [childName]
-                dictKey = makeDictPath pathChild
                 
-                (nodes, new_cmd) = case (Dict.get dictKey model.nodes) of
+                (nodes, new_cmd) = case (nodeListGet model.nodes pathChild) of
                     Just _ -> (model.nodes, Cmd.none)
-                    Nothing -> (Dict.insert dictKey NodeLoading model.nodes, commandGetFromPath pathChild)                            
+                    Nothing -> (nodeListSet model.nodes pathChild NodeLoading, commandGetFromPath pathChild)
             in
                 ({model | nodes = nodes}, cmd ++ [new_cmd])
     in
