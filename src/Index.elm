@@ -93,8 +93,20 @@ getContentCurrentNode model =
 
 makePathItem (index, name) = span [class "panel_path_item", onClick (EventPathClick index)] [text name]
 
--- makeLeftList model = List.map makeLeftListItem ["..", "cosik", "cosik2", "cosik4334"]
-makeLeftList model = List.map makeLeftListItem ["..", "cosik", "cosik2", "cosik4334"]
+makeLeftList model = 
+
+    let
+        currentNode = Dict.get (makeDictPath model.path) model.nodes
+    in
+        case currentNode of
+            Just node ->
+                ( case node of
+                    NodeLoading -> [span [] [text "Ładowanie zawartości"]]
+                    NodeContent {content, child} -> List.map makeLeftListItem ([".."] ++ child) )
+            Nothing ->
+                [ makeLeftListItem "..", span [] [text "Brak noda"]]
+
+
 makeLeftListItem name = div [class "left_item", onClick (EventLeftClick name)] [text name]
 
 makeLogItem line = div [class "logs_line"] [text line]
@@ -138,11 +150,12 @@ update msg model =
 
 
 parseOk: String -> Node
-parseOk message = NodeContent {content = ".. coś coś coś ..", child = ["dsadas", "dsa", "21"]}
---    case Json.decodeString parseResponseGetOk message of
---        Just objResp -> NodeContent {content = objResp.content, child = objResp.child}
---        Nothing -> NodeContent {content = ".. coś coś coś ..", child = ["dsadas", "dsa", "21"]}
+parseOk message = case (Json.decodeString parseResponseGetOk message) of
+    Ok objResp -> NodeContent {content = objResp.content, child = objResp.child}
+    Err _ -> NodeContent {content = ".. coś coś coś ..", child = ["dsadas", "dsa", "21"]}
         
+
+-- parseOk message = NodeContent {content = ".. coś coś coś ..", child = ["dsadas", "dsa", "21"]}
 
 
 -- addLog : Model -> String -> Model
