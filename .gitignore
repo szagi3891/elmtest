@@ -1,4 +1,4 @@
-elm-stuff
-node_modules
-static/build
-server/target
+src/front/node_modules
+src/front/elm-stuff
+src/front/build
+src/server/target
