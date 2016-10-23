@@ -1,3 +1,6 @@
-//static/file --> /src/front/static/file
-//build/index.elm.js --> /src/front/build/index.elm.js
-//data -> ./data
+#!/bin/sh
+
+RUST_BACKTRACE=1 ./src/server/target/debug/server \
+--data /data \
+--static static=/src/front/static \
+--static build=/src/front/build

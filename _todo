@@ -1,6 +1,2 @@
-odbierać parametry w serwerze
-1 - parametr wskazujący na katalog z danymi
-2 - katalog wskazujący na apkę frontową
-
 pozbyć się wersji serwera jsowej i przepisać ją na wersję rust
 
