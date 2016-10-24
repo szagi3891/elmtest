@@ -25,7 +25,6 @@ impl<'a> Router<'a> {
 
         match self.next {
             Some(value) => {
-                println!("aaaa ---- {:?}", value);
 
                 if value == chunk {
                     self.next = self.iterator.next();

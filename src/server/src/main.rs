@@ -4,6 +4,8 @@ extern crate getopts;
 mod main_cli_args;
 mod server_app;
 mod router;
+mod routing;
+mod outresponse;
 
 fn main() {
 

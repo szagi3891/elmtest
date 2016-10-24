@@ -2,6 +2,8 @@ use hyper::server::{Handler, Server, Request, Response};
 use hyper::uri::RequestUri;
 use std::collections::HashMap;
 use router::Router;
+use routing::process_router;
+use outresponse::OutResponse;
 
 pub fn start_server(data_path: String, static_path: HashMap<String, String>) {
 
@@ -14,7 +16,6 @@ pub fn start_server(data_path: String, static_path: HashMap<String, String>) {
 }
 
 pub struct ServerApp {
-    //sender: Mutex<Sender<&'static str>>
     data: String,
     static_path: HashMap<String, String>,
 }
@@ -25,26 +26,10 @@ impl Handler for ServerApp {
         match req.uri {
             RequestUri::AbsolutePath(url) => {
 
-                let mut router = Router::new(url.as_str());
+                let router = Router::new(url.as_str());
+                let out_response = OutResponse::new(res);
 
-                if router.eq("api") {
-                    let url = router.url();
-
-                    res.send(format!("Api {:?}", url).as_bytes()).unwrap();
-                    return;
-                }
-                
-                for (prefix, prefix_path) in self.static_path.iter() {
-                    
-                    if router.eq(prefix.as_str()) {
-                        println!("dopasowano {:?} {:?}", prefix, prefix_path);
-                        res.send(format!("dopasowano {:?} {:?}", prefix, prefix_path).as_bytes()).unwrap();
-                        return;
-                    }
-                }
-
-                println!("dd{:?} {:?} {:?}", url, self.data, self.static_path);
-                res.send(format!("Hello World! {:?}", url).as_bytes()).unwrap();
+                process_router(router, &(self.data), &(self.static_path), out_response);
             },
             _ => {
                 res.send(b"Hello World! - error").unwrap();
