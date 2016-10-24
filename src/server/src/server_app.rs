@@ -24,8 +24,24 @@ impl Handler for ServerApp {
         
         match req.uri {
             RequestUri::AbsolutePath(url) => {
-                //Some(url.clone())
-                let router = Router::new(url.as_str());
+
+                let mut router = Router::new(url.as_str());
+
+                if router.eq("api") {
+                    let url = router.url();
+
+                    res.send(format!("Api {:?}", url).as_bytes()).unwrap();
+                    return;
+                }
+                
+                for (prefix, prefix_path) in self.static_path.iter() {
+                    
+                    if router.eq(prefix.as_str()) {
+                        println!("dopasowano {:?} {:?}", prefix, prefix_path);
+                        res.send(format!("dopasowano {:?} {:?}", prefix, prefix_path).as_bytes()).unwrap();
+                        return;
+                    }
+                }
 
                 println!("dd{:?} {:?} {:?}", url, self.data, self.static_path);
                 res.send(format!("Hello World! {:?}", url).as_bytes()).unwrap();
