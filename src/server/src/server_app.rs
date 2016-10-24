@@ -1,6 +1,7 @@
 use hyper::server::{Handler, Server, Request, Response};
 use hyper::uri::RequestUri;
 use std::collections::HashMap;
+use router::Router;
 
 pub fn start_server(data_path: String, static_path: HashMap<String, String>) {
 
@@ -21,20 +22,17 @@ pub struct ServerApp {
 impl Handler for ServerApp {
     fn handle(&self, req: Request, res: Response) {
         
-        let uri = match req.uri {
-            RequestUri::AbsolutePath(url) => Some(url.clone()),
-            _ => None
-        };
+        match req.uri {
+            RequestUri::AbsolutePath(url) => {
+                //Some(url.clone())
+                let router = Router::new(url.as_str());
 
-        println!("dd{:?} {:?} {:?}", uri, self.data, self.static_path);
-
-        match uri {
-            Some(uri) => {
-                res.send(format!("Hello World! {:?}", uri).as_bytes()).unwrap();
+                println!("dd{:?} {:?} {:?}", url, self.data, self.static_path);
+                res.send(format!("Hello World! {:?}", url).as_bytes()).unwrap();
             },
-            None => {
+            _ => {
                 res.send(b"Hello World! - error").unwrap();
-            },
-        }
+            }
+        };
     }
 }
