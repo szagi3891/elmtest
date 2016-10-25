@@ -5,7 +5,6 @@ mod main_cli_args;
 mod server_app;
 mod lib;
 mod routing;
-mod outresponse;
 
 fn main() {
 
