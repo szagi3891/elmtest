@@ -1,7 +1,7 @@
 use hyper::server::{Handler, Server, Request, Response};
 use hyper::uri::RequestUri;
 use std::collections::HashMap;
-use router::Router;
+use lib::router::Router;
 use routing::process_router;
 use outresponse::OutResponse;
 

@@ -1,5 +1,5 @@
 use hyper::status::StatusCode;
-use router::Router;
+use lib::router::Router;
 use outresponse::OutResponse;
 use std::collections::HashMap;
 use std::fs::File;
@@ -31,6 +31,16 @@ pub fn process_router<'a>(
         return;
     }
 
+/*
+    typy:
+    favicon
+    text ok     dodać kodowanie utf8
+    text error  dodać kodowanie utf8
+    obrazek
+    css
+    js
+*/
+    
     //http://www.freefavicon.com/freefavicons/objects/iconinfo/a-new-computer-152-4714.html
     
     for (prefix, prefix_path) in (*static_path).iter() {
