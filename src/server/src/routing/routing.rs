@@ -1,8 +1,10 @@
-use hyper::status::StatusCode;
 use lib::router::Router;
 use lib::outresponse::OutResponse;
 use std::collections::HashMap;
 use std::fs::File;
+
+use lib::get_file_type::get_file_type;
+use lib::response_type::ResponseType;
 
 use std::io::Read;
 
@@ -14,35 +16,15 @@ pub fn process_router<'a>(
     static_path: &'a HashMap<String, String>,
     out_response: OutResponse
 ) {
-    
-    /*
-    (
-        status code,
-        mime odpowiedzi
-        odpowiedź - ciąg bajtów
-    )
-    */
-
-    //*res.status_mut() = StatusCode::MethodNotAllowed
-    //res.headers_mut().set(ContentLength(body.len() as u64));
 
     if router.eq("api") {
         let url = router.url();
 
-        out_response.send(format!("Api {:?}", url).as_bytes());
+        out_response.send(ResponseType::Html, format!("Api {:?}", url).as_bytes());
         return;
     }
 
-/*
-    typy:
-    favicon
-    text ok     dodać kodowanie utf8
-    text error  dodać kodowanie utf8
-    obrazek
-    css
-    js
-*/
-    
+
     //http://www.freefavicon.com/freefavicons/objects/iconinfo/a-new-computer-152-4714.html
     
     for (prefix, prefix_path) in (*static_path).iter() {
@@ -57,13 +39,16 @@ pub fn process_router<'a>(
                     panic!("niedozwolona fraza");
                             //TODO - dorobić poprawną obsługę
                             //sprawdzić czy w to odgałęzienie wchodzi program prawidłowo
+                            //normalizować ścieżkę i sprawdzać czy początek zgadza się ze ścieżką bazową
                 }
 
                 let file_to_open = format!(".{}{}", prefix_path, file_path);
                 
                                                                 //TODO - remove this line
                 println!("open {:?}", file_to_open);
-                
+
+                let response_type_opt = get_file_type(file_to_open.as_str());
+
                 match File::open(file_to_open) {
 
                     Ok(mut file) => {
@@ -73,28 +58,35 @@ pub fn process_router<'a>(
                         match file.read_to_end(&mut file_data) {
                             Ok(_) => {
                                 
-                                out_response.send(file_data.as_slice());
-                                return;
+                                match response_type_opt {
+                                    Some(response_type) => {
+                                        out_response.send(response_type, file_data.as_slice());
+                                    }
+                                    None => {
+                                        out_response.send(ResponseType::ServerError, file_data.as_slice());
+                                    }
+                                }
                             }
                             Err(err) => {
-                                out_response.send("error read".as_bytes());
-                                return;
+                                out_response.send(ResponseType::Html, "error read".as_bytes());
                             },
                         }
                     },
 
                     Err(err) => {
-                        out_response.send("error open".as_bytes());
-                        return;
+                        out_response.send(ResponseType::Html, "error open".as_bytes());                        
                     },
                 };
+
+                return;
             }
             
-            out_response.send(format!("dopasowano - brak urla {:?} {:?} {:?}", prefix, prefix_path, url).as_bytes());
+            out_response.send(ResponseType::Html, format!("dopasowano - brak urla {:?} {:?} {:?}", prefix, prefix_path, url).as_bytes());
+
             return;
         }
     }
 
     let url = router.url();
-    out_response.send(format!("Hello World! {:?}", url).as_bytes());
+    out_response.send(ResponseType::ServerError, format!("Brak dopasowania w routerze {:?}", url).as_bytes());
 }
