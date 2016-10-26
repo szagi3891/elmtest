@@ -37,24 +37,24 @@ pub fn serve(out_response: OutResponse, prefix_path: &String, url: Option<String
                                 out_response.send(response_type, file_data.as_slice());
                             }
                             None => {
-                                out_response.send(ResponseType::ServerError, file_data.as_slice());
+                                out_response.send(ResponseType::ServerError, "missing extension".as_bytes());
                             }
                         }
                     }
                     Err(err) => {
-                        out_response.send(ResponseType::Html, "error read".as_bytes());
+                        out_response.send(ResponseType::ServerError, "error read".as_bytes());
                     },
                 }
             },
 
             Err(err) => {
-                out_response.send(ResponseType::Html, "error open".as_bytes());                        
+                out_response.send(ResponseType::NotFound, "File not fount".as_bytes());                        
             },
         };
 
         return;
     }
 
-    out_response.send(ResponseType::Html, format!("dopasowano - brak urla {:?} {:?}", prefix_path, url).as_bytes());
+    out_response.send(ResponseType::NotFound, "File not fount".as_bytes());   
 
 }

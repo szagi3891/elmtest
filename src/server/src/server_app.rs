@@ -2,7 +2,7 @@ use hyper::server::{Handler, Server, Request, Response};
 use hyper::uri::RequestUri;
 use std::collections::HashMap;
 use lib::router::Router;
-use routing::routing::process_router;
+use routing::process_router;
 use lib::outresponse::OutResponse;
 
 pub fn start_server(data_path: String, static_path: HashMap<String, String>) {

@@ -32,6 +32,11 @@ impl<'a> OutResponse<'a> {
                 self.set_content_type(TopLevel::Application, SubLevel::Javascript);
             },
 
+            ResponseType::NotFound => {
+                self.set_response_code(StatusCode::NotFound);
+                self.set_content_type(TopLevel::Text, SubLevel::Html);
+            },
+            
             ResponseType::ServerError => {
                 self.set_response_code(StatusCode::InternalServerError);
                 self.set_content_type(TopLevel::Text, SubLevel::Html);
