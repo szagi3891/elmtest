@@ -21,25 +21,30 @@ impl<'a> OutResponse<'a> {
 
         match resp_type {
             ResponseType::Html => {
-                self.set_content_type(TopLevel::Text, SubLevel::Html);
+                self.set_content_type(TopLevel::Text, SubLevel::Html, true);
             },
 
             ResponseType::Css => {
-                self.set_content_type(TopLevel::Text, SubLevel::Css);
+                self.set_content_type(TopLevel::Text, SubLevel::Css, true);
             },
 
             ResponseType::Js => {
-                self.set_content_type(TopLevel::Application, SubLevel::Javascript);
+                self.set_content_type(TopLevel::Application, SubLevel::Javascript, true);
+            },
+
+            ResponseType::Ico => {
+                let sub_level = SubLevel::Ext("x-icon".to_string());
+                self.set_content_type(TopLevel::Image, sub_level, false);
             },
 
             ResponseType::NotFound => {
                 self.set_response_code(StatusCode::NotFound);
-                self.set_content_type(TopLevel::Text, SubLevel::Html);
+                self.set_content_type(TopLevel::Text, SubLevel::Html, true);
             },
             
             ResponseType::ServerError => {
                 self.set_response_code(StatusCode::InternalServerError);
-                self.set_content_type(TopLevel::Text, SubLevel::Html);
+                self.set_content_type(TopLevel::Text, SubLevel::Html, true);
             },
         }
         
@@ -50,13 +55,19 @@ impl<'a> OutResponse<'a> {
         *self.res.status_mut() = status_code;
     }
 
-    fn set_content_type(&mut self, top: TopLevel, sub:SubLevel) {
+    fn set_content_type(&mut self, top: TopLevel, sub:SubLevel, add_utf8: bool) {
+
+        let encoding = match add_utf8 {
+            true => vec![(Attr::Charset, Value::Utf8)],
+            false => vec![],
+        };
+        
         self.res.headers_mut().set(
             ContentType(
                 Mime(
                     top,
                     sub,
-                    vec![(Attr::Charset, Value::Utf8)]
+                    encoding
                 )
             )
         )

@@ -15,6 +15,7 @@ fn get_ext(ext: &OsStr) -> ResponseType {
         Some("html") => ResponseType::Html,
         Some("css") => ResponseType::Css,
         Some("js") => ResponseType::Js,
+        Some("ico") => ResponseType::Ico,
         //txt Type::TextPlain
         //jpg Type::ImageJpeg
         //png Type::ImagePng

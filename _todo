@@ -1,2 +1,5 @@
 pozbyć się wersji serwera jsowej i przepisać ją na wersję rust
 
+pozbyć się mutwoalnych metod z routera
+    router ma operować na slice
+    powinno się dać również tworzyć wiele lekkich różnych wersji tego samego routera
