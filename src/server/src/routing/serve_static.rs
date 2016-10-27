@@ -42,13 +42,17 @@ pub fn serve(out_response: OutResponse, prefix_path: &String, url: Option<String
                         }
                     }
                     Err(err) => {
-                        out_response.send(ResponseType::ServerError, "error read".as_bytes());
+                                                //TODO - use better err varible
+                        let error_message = format!("error read - {:#?}", err);
+                        out_response.send(ResponseType::ServerError, error_message.as_bytes());
                     },
                 }
             },
 
             Err(err) => {
-                out_response.send(ResponseType::NotFound, "File not fount".as_bytes());                        
+                                    //TODO - use better err varible
+                let error_message = format!("File not fount - {:#?}", err);
+                out_response.send(ResponseType::NotFound, error_message.as_bytes());                        
             },
         };
 

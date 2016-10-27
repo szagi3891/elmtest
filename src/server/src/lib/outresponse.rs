@@ -2,7 +2,7 @@ use hyper::server::{Response};
 use lib::response_type::ResponseType;
 
 use hyper::status::StatusCode;
-use hyper::header::{Headers, ContentType};
+use hyper::header::{/*Headers,*/ ContentType};
 use hyper::mime::{Mime, TopLevel, SubLevel, Attr, Value};
 
 pub struct OutResponse<'a> {

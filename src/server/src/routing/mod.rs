@@ -4,7 +4,7 @@ use std::collections::HashMap;
 
 use lib::response_type::ResponseType;
 mod serve_static;
-
+mod serve_old_api;
 
 pub fn process_router<'a>(
     mut router: Router<'a>,
@@ -14,9 +14,8 @@ pub fn process_router<'a>(
 ) {
 
     if router.eq("api") {
-        let url = router.url();
 
-        out_response.send(ResponseType::Html, format!("Api {:?}", url).as_bytes());
+        serve_old_api::serve(out_response, router);
         return;
     }
     
@@ -31,5 +30,6 @@ pub fn process_router<'a>(
     }
 
     let url = router.url();
-    out_response.send(ResponseType::ServerError, format!("Missing in router {:?}", url).as_bytes());
+    let error_message = format!("Missing in router {:?}", url);
+    out_response.send(ResponseType::ServerError, error_message.as_bytes());
 }

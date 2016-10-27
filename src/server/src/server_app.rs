@@ -29,7 +29,12 @@ impl Handler for ServerApp {
                 let router = Router::new(url.as_str());
                 let out_response = OutResponse::new(res);
 
-                process_router(router, &(self.data), &(self.static_path), out_response);
+                process_router(
+                    router,
+                    &(self.data),
+                    &(self.static_path),
+                    out_response
+                );
             },
             _ => {
                 res.send(b"Hello World! - error").unwrap();
