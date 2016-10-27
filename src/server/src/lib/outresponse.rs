@@ -33,7 +33,7 @@ impl<'a> OutResponse<'a> {
             },
 
             ResponseType::Ico => {
-                let sub_level = SubLevel::Ext("x-icon".to_string());
+                let sub_level = SubLevel::Ext("x-icon".to_string());                    //TODO - remove unnessesery alocation
                 self.set_content_type(TopLevel::Image, sub_level, false);
             },
 
@@ -48,7 +48,17 @@ impl<'a> OutResponse<'a> {
             },
         }
         
-        self.res.send(body).unwrap();
+        //TODO - dodać niemutowalny router i wykorzystać go przy wyświetlaniu informacji o zepsutej rurce
+
+        match self.res.send(body) {
+            Ok(_) => {
+                //sending ok
+            },
+            Err(err) => {
+                //std::io::Error - standardowy błąd zapisu na strumień
+                println!("response: sending error - {:#?}", err);
+            }
+        }
     }
     
     fn set_response_code(&mut self, status_code: StatusCode) {
