@@ -25,7 +25,7 @@ dependencies = [
 
 [[package]]
 name = "gcc"
-version = "0.3.37"
+version = "0.3.38"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -151,7 +151,7 @@ version = "0.7.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bitflags 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "gcc 0.3.37 (registry+https://github.com/rust-lang/crates.io-index)",
+ "gcc 0.3.38 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "libc 0.2.17 (registry+https://github.com/rust-lang/crates.io-index)",
  "openssl-sys 0.7.17 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -175,7 +175,7 @@ name = "openssl-sys-extras"
 version = "0.7.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "gcc 0.3.37 (registry+https://github.com/rust-lang/crates.io-index)",
+ "gcc 0.3.38 (registry+https://github.com/rust-lang/crates.io-index)",
  "libc 0.2.17 (registry+https://github.com/rust-lang/crates.io-index)",
  "openssl-sys 0.7.17 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -316,7 +316,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [metadata]
 "checksum bitflags 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "aad18937a628ec6abcd26d1489012cc0e18c21798210f491af69ded9b881106d"
 "checksum cookie 0.2.5 (registry+https://github.com/rust-lang/crates.io-index)" = "0e3d6405328b6edb412158b3b7710e2634e23f3614b9bb1c412df7952489a626"
-"checksum gcc 0.3.37 (registry+https://github.com/rust-lang/crates.io-index)" = "41337e9dc80ebadf36b4f252bf7440f61bcf34f99caa170e50dcd0f9a0cdb5d8"
+"checksum gcc 0.3.38 (registry+https://github.com/rust-lang/crates.io-index)" = "553f11439bdefe755bf366b264820f1da70f3aaf3924e594b886beb9c831bcf5"
 "checksum gdi32-sys 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "0912515a8ff24ba900422ecda800b52f4016a56251922d397c576bf92c690518"
 "checksum getopts 0.2.14 (registry+https://github.com/rust-lang/crates.io-index)" = "d9047cfbd08a437050b363d35ef160452c5fe8ea5187ae0a624708c91581d685"
 "checksum hpack 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "3d2da7d3a34cf6406d9d700111b8eafafe9a251de41ae71d8052748259343b58"
