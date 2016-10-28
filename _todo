@@ -5,3 +5,7 @@ pozbyć się mutwoalnych metod z routera
     powinno się dać również tworzyć wiele lekkich różnych wersji tego samego routera
 
 zacząć budować metody do heszowania plików
+    jeśli w katalogu jest więcej niż 500 plików, to trzeba wydzielać podkatalogi
+        500 + 256 możliwych podkatalogów
+        
+    przy odczycie, jeśli nie znaleziono pliku, to sprawdź czy znaleziono katalog z takim przedrostkiem jakiego szukamy
