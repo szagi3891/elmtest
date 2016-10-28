@@ -14,3 +14,8 @@ kesz, też może posiadać swoją strukturę blobową
     
 webp - konwertowanie do miniaturki
         https://github.com/PistonDevelopers/image
+
+sposób na synchronizowanie różnych wątków które będą chciały tworzyć takie same pliki lub katalogi
+    wykorzystać barierę może
+
+
