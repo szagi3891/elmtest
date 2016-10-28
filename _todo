@@ -9,3 +9,9 @@ zacząć budować metody do heszowania plików
         500 + 256 możliwych podkatalogów
         
     przy odczycie, jeśli nie znaleziono pliku, to sprawdź czy znaleziono katalog z takim przedrostkiem jakiego szukamy
+
+kesz, też może posiadać swoją strukturę blobową
+    chociaż w tym przypadku powinna wystarczyś prosta struktura plików
+    
+webp - konwertowanie do miniaturki
+        https://github.com/PistonDevelopers/image

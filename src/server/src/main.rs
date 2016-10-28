@@ -1,5 +1,6 @@
 extern crate hyper;
 extern crate getopts;
+extern crate rustc_serialize;
 
 mod main_cli_args;
 mod server_app;
