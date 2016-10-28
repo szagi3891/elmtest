@@ -3,6 +3,7 @@ pub enum ResponseType {
     Js,
     Html,
     Ico,
+    Json,
     ServerError,        //error 500
     NotFound,           //error 404
 }

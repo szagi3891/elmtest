@@ -37,6 +37,10 @@ impl<'a> OutResponse<'a> {
                 self.set_content_type(TopLevel::Image, sub_level, false);
             },
 
+            ResponseType::Json => {
+                self.set_content_type(TopLevel::Application, SubLevel::Json, true);
+            },
+
             ResponseType::NotFound => {
                 self.set_response_code(StatusCode::NotFound);
                 self.set_content_type(TopLevel::Text, SubLevel::Html, true);

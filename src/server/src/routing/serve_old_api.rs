@@ -28,11 +28,7 @@ pub fn serve<'a>(out_response: OutResponse, mut router: Router<'a>) {
 
         let encoded = json::encode(&resp).unwrap();
         
-        println!("zakodowane: {:?}", encoded);
-
-        let url = router.url();
-
-        out_response.send(ResponseType::Html, format!("Api {:?}", url).as_bytes());
+        out_response.send(ResponseType::Json, encoded.as_bytes());
         return;
     }
     
