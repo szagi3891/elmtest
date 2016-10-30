@@ -9,6 +9,7 @@ use lib::blob_stor::file_counter::FileCounter;
 
 pub struct Dir {
     inner: Arc<RwLock<DirMode>>,
+    max_file: u32,
 }
 
 enum DirMode {
@@ -27,9 +28,10 @@ enum DirSetCommand {
 
 impl Dir {
 
-    pub fn new_uninit(driver: DriverUninit) -> Dir {
+    pub fn new_uninit(driver: DriverUninit, max_file: u32) -> Dir {
         Dir {
             inner: Arc::new(RwLock::new(DirMode::Uninitialized(driver))),
+            max_file: max_file,
         }
     }
 
@@ -87,15 +89,13 @@ impl Dir {
             DirMode::ContentFiles(ref file_driver, ref file_counter) => {
                 
                 let guard = file_counter.get_increment_guard();
-                                                                        //TODO - use param
-                if guard.count() > 1000 {
+
+                if guard.count() > self.max_file {
                     DirSetCommand::NeedRebuildToSubDir
 
                 } else {
-
-                    //TODO - odpal procedurę pisania
-                    unimplemented!();
-
+                    file_driver.set(hash, content);
+                    guard.inc();
                     DirSetCommand::SetSuccess
                 }
             },

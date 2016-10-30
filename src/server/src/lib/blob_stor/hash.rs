@@ -10,4 +10,8 @@ impl<'a> Hash<'a> {
             pos: 0,
         }
     }
+    
+    pub fn get(&self) -> &'a [u8] {            //TODO - uwzględnić pozycję
+        self.hash
+    }
 }

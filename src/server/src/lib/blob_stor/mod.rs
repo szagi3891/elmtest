@@ -15,12 +15,12 @@ pub struct BlobStor {
 
 impl BlobStor {
 
-    pub fn new<'a>(base_path: &'a str) -> BlobStor {
+    pub fn new<'a>(base_path: &'a str, max_file: u32) -> BlobStor {
 
         let driver = DriverUninit::new(base_path.to_string());
         
         BlobStor {
-            root : Dir::new_uninit(driver),
+            root : Dir::new_uninit(driver, max_file),
         }
     }
 

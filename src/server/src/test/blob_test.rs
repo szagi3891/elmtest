@@ -5,7 +5,7 @@ use crypto::sha1::Sha1;
 
 pub fn test(path: &str) {
 
-    let mut stor = BlobStor::new(path);
+    let mut stor = BlobStor::new(path, 1000);
 
     let text1 = "dsadasdsa dasdasdas dasdasd aaa 111";
     let text2 = "dsadasdsa dasdasdas dasdasd aaa 222";

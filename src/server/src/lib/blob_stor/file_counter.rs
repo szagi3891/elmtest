@@ -31,4 +31,8 @@ impl<'a> FileCounterIncrease<'a> {
     pub fn count(&self) -> u32 {
         self.inner.clone()
     }
+    
+    pub fn inc(mut self) {
+        *self.inner += 1;
+    }
 }

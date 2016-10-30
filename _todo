@@ -3,26 +3,11 @@ pozbyć się mutwoalnych metod z routera
     router ma operować na slice
     powinno się dać również tworzyć wiele lekkich różnych wersji tego samego routera
 
-zacząć budować metody do heszowania plików
-    jeśli w katalogu jest więcej niż 500 plików, to trzeba wydzielać podkatalogi
-        500 + 256 możliwych podkatalogów
-        
-    przy odczycie, jeśli nie znaleziono pliku, to sprawdź czy znaleziono katalog z takim przedrostkiem jakiego szukamy
-
 kesz, też może posiadać swoją strukturę blobową
     chociaż w tym przypadku powinna wystarczyś prosta struktura plików
     
 webp - konwertowanie do miniaturki
         https://github.com/PistonDevelopers/image
-
-sposób na synchronizowanie różnych wątków które będą chciały 
-    https://doc.rust-lang.org/std/fs/struct.OpenOptions.html#method.create_new
-
-    use std::fs::OpenOptions;
-
-    let file = OpenOptions::new().write(true)
-                                 .create_new(true)
-                                 .open("foo.txt");
 
 https://crates.io/crates/uuid
 
