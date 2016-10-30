@@ -33,5 +33,5 @@ fn set(stor: &mut BlobStor, text: &str) {
     let hex = hasher.result_str();
     //assert_eq!(hex, "2aae6c35c94fcfb415dbe95f408b9ce91ee846ed");
 
-    stor.set(hex.as_bytes(), text.as_bytes());
+    stor.set(hex.as_str(), text.as_bytes());
 }

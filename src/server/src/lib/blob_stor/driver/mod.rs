@@ -2,6 +2,7 @@ use std::fs::read_dir;
 use std::path::PathBuf;
 use std::collections::HashMap;
 use std::fs::OpenOptions;
+use std::io::Write;
 
 use lib::blob_stor::hash::Hash;
 
@@ -87,26 +88,26 @@ impl DriverUninit {
 
 impl DriverFiles {
     pub fn set(&self, hash: &Hash, content: &[u8]) {
-    
-        unimplemented!();
-                    //https://doc.rust-lang.org/std/fs/struct.OpenOptions.html#method.create_new
-    /*
-        let path = self.path + "/" + hash.get();
 
-        let file_opt = OpenOptions::new().write(true)
+                    //https://doc.rust-lang.org/std/fs/struct.OpenOptions.html#method.create_new
+
+        let mut path = self.path.clone();
+        path.push(hash.as_str());
+
+
+        let mut file_opt = OpenOptions::new().write(true)
                                      .create_new(true)
                                      .open(path);
 
         match file_opt {
-            Ok(file) => {
-                //TODO - plik utworzono, można zapisać dane
-                unimplemented!();
+            Ok(mut file) => {
+                
+                file.write_all(content).unwrap();                
             },
             Err(err) => {
                 //TODO - trzeba sprawdzić czy ten plik ma taką samą zawartość jak treść którą chcemy zapisać
                 unimplemented!();
             }
         }
-    */
     }
 }

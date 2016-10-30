@@ -9,8 +9,15 @@ kesz, też może posiadać swoją strukturę blobową
 webp - konwertowanie do miniaturki
         https://github.com/PistonDevelopers/image
 
+
+BlobStorage
+    metody drivera porozdzielać na mniejsze pliczki
+    aby odsłonić główną logikę driverów
+
 https://crates.io/crates/uuid
 
 https://crates.io/crates/rust-crypto
 https://github.com/DaGenix/rust-crypto/
+
+
 

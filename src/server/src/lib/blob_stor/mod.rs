@@ -5,6 +5,7 @@ mod dir;
 mod hash;
 mod driver;
 mod file_counter;
+mod hex;
 
 use lib::blob_stor::hash::Hash;
 use lib::blob_stor::dir::Dir;
@@ -25,11 +26,11 @@ impl BlobStor {
         }
     }
 
-    pub fn get(&mut self, hash: &[u8]) -> String {
+    pub fn get(&mut self, hash: &str) -> String {
         self.root.get(Hash::new(hash))
     }
     
-    pub fn set(&mut self, hash: &[u8], content: &[u8]) {
+    pub fn set(&mut self, hash: &str, content: &[u8]) {
         self.root.set(Hash::new(hash), content)
     }
 }
