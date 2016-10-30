@@ -23,3 +23,9 @@ sposób na synchronizowanie różnych wątków które będą chciały
     let file = OpenOptions::new().write(true)
                                  .create_new(true)
                                  .open("foo.txt");
+
+https://crates.io/crates/uuid
+
+https://crates.io/crates/rust-crypto
+https://github.com/DaGenix/rust-crypto/
+
