@@ -2,8 +2,9 @@ use getopts::Options;
 use std::env;
 use std::collections::HashMap;
 use std::env::current_dir;
+use std::path::PathBuf;
 
-pub fn get() -> Result<(String, HashMap<String, String>), String> {
+pub fn get() -> Result<(PathBuf, HashMap<String, String>), String> {
 
     let args: Vec<String> = env::args().collect();
 
@@ -68,5 +69,5 @@ pub fn get() -> Result<(String, HashMap<String, String>), String> {
         }
     }
     
-    Ok((data_path.to_str().unwrap().to_string(), static_path))
+    Ok((data_path, static_path))
 }

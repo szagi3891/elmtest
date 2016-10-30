@@ -1,9 +1,12 @@
-use lib::blob_stor::BlobStor;
+use std::path::PathBuf;
 
 use crypto::digest::Digest;
 use crypto::sha1::Sha1;
 
-pub fn test(path: &str) {
+use lib::blob_stor::BlobStor;
+
+
+pub fn test(path: PathBuf) {
 
     let mut stor = BlobStor::new(path, 1000);
 

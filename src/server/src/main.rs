@@ -14,7 +14,7 @@ fn main() {
     match main_cli_args::get() {
         Ok((data_path, static_path)) => {
             
-            test::blob_test::test(data_path.as_str());
+            test::blob_test::test(data_path);
             println!("koniec testu, udany, wychodzę");
             return;
             

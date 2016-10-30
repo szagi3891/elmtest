@@ -1,4 +1,5 @@
 use std::fs::create_dir;
+use std::path::PathBuf;
 
 mod dir;
 mod hash;
@@ -15,9 +16,9 @@ pub struct BlobStor {
 
 impl BlobStor {
 
-    pub fn new<'a>(base_path: &'a str, max_file: u32) -> BlobStor {
+    pub fn new<'a>(base_path: PathBuf, max_file: u32) -> BlobStor {
 
-        let driver = DriverUninit::new(base_path.to_string());
+        let driver = DriverUninit::new(base_path);
         
         BlobStor {
             root : Dir::new_uninit(driver, max_file),

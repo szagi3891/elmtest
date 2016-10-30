@@ -1,12 +1,12 @@
 use std::fs::read_dir;
-use std::path::Path;
+use std::path::PathBuf;
 use std::collections::HashMap;
 use std::fs::OpenOptions;
 
 use lib::blob_stor::hash::Hash;
 
 pub struct DriverUninit {
-    path: String,
+    path: PathBuf,
 }
 
 pub enum DriverInitResult {
@@ -15,15 +15,15 @@ pub enum DriverInitResult {
 }
 
 pub struct DriverFiles {
-    path: String,
+    path: PathBuf,
 }
 
 pub struct DriverDir {
-    path: String,
+    path: PathBuf,
 }
 
 impl DriverUninit {
-    pub fn new(path: String) -> DriverUninit {
+    pub fn new(path: PathBuf) -> DriverUninit {
         DriverUninit {
             path: path
         }
@@ -35,7 +35,7 @@ impl DriverUninit {
         println!("czytam {:?}", path);
         
         let mut files_count = 0;
-        let dir_list = read_dir(Path::new(path.as_str())).unwrap();
+        let dir_list = read_dir(path.as_path()).unwrap();
         
         let mut map: HashMap<u8, DriverUninit> = HashMap::new();            //TODO - remove type
         

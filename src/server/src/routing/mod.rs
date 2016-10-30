@@ -1,6 +1,7 @@
 use lib::router::Router;
 use lib::outresponse::OutResponse;
 use std::collections::HashMap;
+use std::path::PathBuf;
 
 use lib::response_type::ResponseType;
 mod serve_static;
@@ -8,7 +9,7 @@ mod serve_old_api;
 
 pub fn process_router<'a>(
     mut router: Router<'a>,
-    data_path: &String,
+    data_path: PathBuf,
     static_path: &'a HashMap<String, String>,
     out_response: OutResponse
 ) {
