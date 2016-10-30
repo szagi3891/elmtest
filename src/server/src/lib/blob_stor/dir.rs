@@ -1,29 +1,35 @@
 use std::sync::RwLock;
 use std::sync::Arc;
+use std::mem::replace;
+use std::collections::HashMap;
 
 use lib::blob_stor::hash::Hash;
+use lib::blob_stor::driver::{DriverUninit, DriverInitResult, DriverFiles, DriverDir};
+use lib::blob_stor::file_counter::FileCounter;
 
 pub struct Dir {
     inner: Arc<RwLock<DirMode>>,
 }
 
 enum DirMode {
-    Uninitialized,
-    ContentFiles,
-    ContentDir,
+    None,
+    Uninitialized(DriverUninit),
+    ContentFiles(DriverFiles, FileCounter),
+    ContentDir(DriverDir, HashMap<u8, Dir>),
 }
 
 enum DirSetCommand {
     NeedInit,
     SetSuccess,
+    NeedRebuildToSubDir,
     NeedSubDir(u8),
 }
 
 impl Dir {
 
-    pub fn new_uninit() -> Dir {
+    pub fn new_uninit(driver: DriverUninit) -> Dir {
         Dir {
-            inner: Arc::new(RwLock::new(DirMode::Uninitialized)),
+            inner: Arc::new(RwLock::new(DirMode::Uninitialized(driver))),
         }
     }
 
@@ -38,55 +44,96 @@ impl Dir {
         
         loop {
             count_loop += 1;
+
             if (count_loop > 10) {
                 panic!("too much recursion");
             }
             
-            match (self.set_exec(hash, content)) {
+            match (self.set_exec(&hash, content)) {
                 DirSetCommand::NeedInit => {
-                    
-                    //TODO - odczytanie początkowej struktury katalogu
-                    unimplemented!();
+                    self.initialize();
                 },
 
                 DirSetCommand::SetSuccess => {
                     return;
                 },
 
-                DirSetCommand::NeedSubDir(_) => {
+                DirSetCommand::NeedRebuildToSubDir => {
 
-                    //TODO - utworzenie kolejnego podkatalogu
+                    //TODO - trzeba przebudować ten katalog zawierający pliki, na katalog zawierający podkatalogi
                     unimplemented!();
                 },
+                
+                DirSetCommand::NeedSubDir(_) => {
+                    //TODO - trzeba utworzyć podkatalog o wskazanej nazwie
+                    unimplemented!();
+                }
             }
         }
     }
 
-    fn set_exec(&mut self, hash: Hash, content: &[u8]) -> DirSetCommand {
+    fn set_exec(&mut self, hash: &Hash, content: &[u8]) -> DirSetCommand {
         
         let guard = self.inner.read().unwrap();
 
         match *guard {
-            DirMode::Uninitialized => DirSetCommand::NeedInit,
 
-            DirMode::ContentFiles => {
-                //jeśli licznik jest ok,
-                    //TODO - odpal procedurę pisania
-                    DirSetCommand::SetSuccess
-                //w przeciwnym razie, zwróć informację ze statusem, że ten katalog wymaga przebudowania na ContentDir
+            DirMode::None => {
+                panic!("incorrect branch");
             },
 
-            DirMode::ContentDir => {
+            DirMode::Uninitialized(_) => DirSetCommand::NeedInit,
+
+            DirMode::ContentFiles(ref file_driver, ref file_counter) => {
+                
+                let guard = file_counter.get_increment_guard();
+                                                                        //TODO - use param
+                if guard.count() > 1000 {
+                    DirSetCommand::NeedRebuildToSubDir
+
+                } else {
+
+                    //TODO - odpal procedurę pisania
+                    unimplemented!();
+
+                    DirSetCommand::SetSuccess
+                }
+            },
+
+            DirMode::ContentDir(_, _) => {
                 //weź podkatalog
                 //istnieje
                     //odpal metodę set na tym podkatalogu
                 //nie istnieje
-                    DirSetCommand::NeedSubDir(0x43)
+                    DirSetCommand::NeedSubDir(0x43)         //TODO
             },
         }
     }
 
     fn initialize(&mut self) {
-        //czytanie struktury tego katalogu
+        
+        let mut guard = self.inner.write().unwrap();
+        
+        let mut content = replace(&mut *guard, DirMode::None);
+        
+        if let DirMode::Uninitialized(driver) = content {
+
+            match driver.init() {
+                DriverInitResult::Files(driver_files, files_count) => {
+                    
+                    replace(&mut *guard, DirMode::ContentFiles(driver_files, FileCounter::new(files_count)));
+                    return;
+                },
+
+                DriverInitResult::Dirs(map, driver_dir) => {
+                    
+                    //TODO - odczytanie początkowej struktury katalogu
+                    unimplemented!();
+                    return;
+                },
+            }
+        }
+        
+        replace(&mut *guard, content);
     }
 }

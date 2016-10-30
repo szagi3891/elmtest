@@ -1,6 +1,7 @@
 use getopts::Options;
 use std::env;
 use std::collections::HashMap;
+use std::env::current_dir;
 
 pub fn get() -> Result<(String, HashMap<String, String>), String> {
 
@@ -17,10 +18,14 @@ pub fn get() -> Result<(String, HashMap<String, String>), String> {
         }
     };
     
-    let data_path = match matches.opt_str("data") {
+    let data_param = match matches.opt_str("data") {
         Some(path) => path,
         None => return Err("Required option 'data'".into()),
     };
+    
+    let mut data_path = current_dir().unwrap();
+    
+    data_path.push(data_param);
     
     let static_list = matches.opt_strs("static");
 
@@ -63,5 +68,5 @@ pub fn get() -> Result<(String, HashMap<String, String>), String> {
         }
     }
     
-    Ok((data_path, static_path))
+    Ok((data_path.to_str().unwrap().to_string(), static_path))
 }

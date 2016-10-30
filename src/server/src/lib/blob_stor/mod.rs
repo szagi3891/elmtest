@@ -1,27 +1,30 @@
+use std::fs::create_dir;
+
 mod dir;
 mod hash;
+mod driver;
+mod file_counter;
 
 use lib::blob_stor::hash::Hash;
 use lib::blob_stor::dir::Dir;
+use lib::blob_stor::driver::DriverUninit;
 
-pub struct BlobStor<'a> {
-    base_path: &'a str,
+pub struct BlobStor {
     root: Dir,
 }
 
-impl<'a> BlobStor<'a> {
+impl BlobStor {
 
-    pub fn new(base_path: &'a str) -> BlobStor<'a> {
-        
-        //TODO - sprawdź czy ten katalog istnieje - jeśli nie to go stwórz
+    pub fn new<'a>(base_path: &'a str) -> BlobStor {
+
+        let driver = DriverUninit::new(base_path.to_string());
         
         BlobStor {
-            base_path: base_path,
-            root : Dir::new_uninit(),
+            root : Dir::new_uninit(driver),
         }
     }
 
-    pub fn get(&mut self, hash: &'a [u8]) -> String {
+    pub fn get(&mut self, hash: &[u8]) -> String {
         self.root.get(Hash::new(hash))
     }
     

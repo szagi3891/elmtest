@@ -1,6 +1,6 @@
 #!/bin/sh
 
 RUST_BACKTRACE=1 ./src/server/target/debug/server \
---data /data \
+--data data \
 --static static=/src/front/static \
 --static build=/src/front/build
