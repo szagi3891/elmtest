@@ -26,7 +26,7 @@ impl BlobStor {
         }
     }
 
-    pub fn get(&mut self, hash: &str) -> String {
+    pub fn get(&mut self, hash: &str) -> Vec<u8> {
         self.root.get(Hash::new(hash))
     }
     

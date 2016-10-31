@@ -4,6 +4,7 @@ use std::collections::HashMap;
 
 use lib::blob_stor::hash::Hash;
 use lib::blob_stor::driver::set_file::set_file;
+use lib::blob_stor::driver::get_file::get_file;
 
 mod set_file;
 mod get_file;
@@ -93,4 +94,13 @@ impl DriverFiles {
 
         set_file(path.as_path(), content);
     }
+    
+    pub fn get(&self, hash: &Hash) -> Vec<u8> {
+        
+        let mut path = self.path.clone();
+        path.push(hash.as_str());
+
+        get_file(path.as_path())
+    }
 }
+

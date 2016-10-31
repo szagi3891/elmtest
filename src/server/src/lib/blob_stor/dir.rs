@@ -20,9 +20,14 @@ enum DirMode {
 
 enum DirSetCommand {
     NeedInit,
-    SetSuccess,
+    Success,
     NeedRebuildToSubDir,
     NeedSubDir(u8),
+}
+
+enum DirGetCommand {
+    NeedInit,
+    Success(Vec<u8>),
 }
 
 impl Dir {
@@ -34,13 +39,27 @@ impl Dir {
         }
     }
 
-    pub fn get(&mut self, hash: Hash) -> String {
+    pub fn get(&mut self, hash: Hash) -> Vec<u8> {
         
-        //TODO
-        unimplemented!();
+        let mut count_loop = 0;
         
-        //let guard = self.inner.read().unwrap();
-        
+        loop {
+            count_loop += 1;
+
+            if (count_loop > 20) {
+                panic!("too much recursion");
+            }
+            
+            match (self.get_exec(&hash)) {
+                DirGetCommand::NeedInit => {
+                    self.initialize();
+                },
+
+                DirGetCommand::Success(result) => {
+                    return result;
+                }
+            }
+        }
     }
     
     pub fn set(&mut self, hash: Hash, content: &[u8]) {
@@ -50,7 +69,7 @@ impl Dir {
         loop {
             count_loop += 1;
 
-            if (count_loop > 10) {
+            if (count_loop > 20) {
                 panic!("too much recursion");
             }
             
@@ -59,7 +78,7 @@ impl Dir {
                     self.initialize();
                 },
 
-                DirSetCommand::SetSuccess => {
+                DirSetCommand::Success => {
                     return;
                 },
 
@@ -73,6 +92,23 @@ impl Dir {
                     //TODO - trzeba utworzyć podkatalog o wskazanej nazwie
                     unimplemented!();
                 }
+            }
+        }
+    }
+
+    fn get_exec(&mut self, hash: &Hash) -> DirGetCommand {
+        
+        let guard = self.inner.read().unwrap();
+        
+        match *guard {
+            DirMode::Uninitialized(_) => DirGetCommand::NeedInit,
+            
+            DirMode::ContentFiles(ref file_driver, ref file_counter) => {
+                DirGetCommand::Success(file_driver.get(hash))
+            }
+            
+            DirMode::ContentDir(_, _) => {
+                unimplemented!();
             }
         }
     }
@@ -95,7 +131,7 @@ impl Dir {
                 } else {
                     file_driver.set(hash, content);
                     guard.inc();
-                    DirSetCommand::SetSuccess
+                    DirSetCommand::Success
                 }
             },
 
