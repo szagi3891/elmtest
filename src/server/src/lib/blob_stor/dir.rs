@@ -125,12 +125,14 @@ impl Dir {
                 
                 let guard = file_counter.get_increment_guard();
 
-                if guard.count() > self.max_file {
+                if guard.count() >= self.max_file {
                     DirSetCommand::NeedRebuildToSubDir
 
                 } else {
-                    file_driver.set(hash, content);
-                    guard.inc();
+                    if file_driver.set(hash, content) {
+                        guard.inc();
+                    }
+
                     DirSetCommand::Success
                 }
             },

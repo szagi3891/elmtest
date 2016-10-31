@@ -79,12 +79,12 @@ impl DriverUninit {
 }
 
 impl DriverFiles {
-    pub fn set(&self, hash: &Hash, content: &[u8]) {
+    pub fn set(&self, hash: &Hash, content: &[u8]) -> bool {
 
         let mut path = self.path.clone();
         path.push(hash.as_str());
 
-        set_file(path.as_path(), content);
+        set_file(path.as_path(), content)
     }
     
     pub fn get(&self, hash: &Hash) -> Vec<u8> {

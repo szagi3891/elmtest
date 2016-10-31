@@ -21,3 +21,5 @@ https://github.com/DaGenix/rust-crypto/
 
 
 
+#[must_use]
+przydałaby się taka opcja na wynik zwracany z funkcji
