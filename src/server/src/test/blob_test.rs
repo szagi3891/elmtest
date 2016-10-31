@@ -8,7 +8,8 @@ use lib::blob_stor::BlobStor;
 
 pub fn test(path: PathBuf) {
 
-    let mut stor = BlobStor::new(path, 1000);
+    //let mut stor = BlobStor::new(path, 1000);
+    let mut stor = BlobStor::new(path, 10);
 
     let text1 = "dsadasdsa dasdasdas dasdasd aaa 111";
     let text2 = "dsadasdsa dasdasdas dasdasd aaa 222";
@@ -21,6 +22,12 @@ pub fn test(path: PathBuf) {
     set(&mut stor, text3);
     set(&mut stor, text4);
     set(&mut stor, text5);
+    
+    if stor.get("fc401e452f718439191c4fa43262d2e0024871cb") == "dsadasdsa dasdasdas dasdasd aaa 222" {
+        println!("pobranie ok");
+    } else {
+        panic!("problem z pobraniem");
+    }
 }
 
 fn set(stor: &mut BlobStor, text: &str) {

@@ -13,7 +13,6 @@ pub struct Dir {
 }
 
 enum DirMode {
-    None,
     Uninitialized(DriverUninit),
     ContentFiles(DriverFiles, FileCounter),
     ContentDir(DriverDir, HashMap<u8, Dir>),
@@ -36,8 +35,12 @@ impl Dir {
     }
 
     pub fn get(&mut self, hash: Hash) -> String {
+        
         //TODO
         unimplemented!();
+        
+        //let guard = self.inner.read().unwrap();
+        
     }
     
     pub fn set(&mut self, hash: Hash, content: &[u8]) {
@@ -80,10 +83,6 @@ impl Dir {
 
         match *guard {
 
-            DirMode::None => {
-                panic!("incorrect branch");
-            },
-
             DirMode::Uninitialized(_) => DirSetCommand::NeedInit,
 
             DirMode::ContentFiles(ref file_driver, ref file_counter) => {
@@ -114,26 +113,32 @@ impl Dir {
         
         let mut guard = self.inner.write().unwrap();
         
-        let mut content = replace(&mut *guard, DirMode::None);
+        let new_content_opt = match *guard {
         
-        if let DirMode::Uninitialized(driver) = content {
+            DirMode::Uninitialized(ref mut driver) => {
 
-            match driver.init() {
-                DriverInitResult::Files(driver_files, files_count) => {
+                match driver.init() {
                     
-                    replace(&mut *guard, DirMode::ContentFiles(driver_files, FileCounter::new(files_count)));
-                    return;
-                },
+                    DriverInitResult::Files(driver_files, files_count) => {
 
-                DriverInitResult::Dirs(map, driver_dir) => {
-                    
-                    //TODO - odczytanie początkowej struktury katalogu
-                    unimplemented!();
-                    return;
-                },
-            }
-        }
+                        Some(DirMode::ContentFiles(driver_files, FileCounter::new(files_count)))
+                    },
+
+                    DriverInitResult::Dirs(map, driver_dir) => {
+
+                        //TODO - odczytanie początkowej struktury katalogu
+                        unimplemented!();
+                    },
+                }
+            },
+            _ => None,
+        };
         
-        replace(&mut *guard, content);
+        match new_content_opt {
+            Some(mut new_content) => {
+                replace(&mut *guard, new_content);
+            },
+            None => {},
+        };
     }
 }

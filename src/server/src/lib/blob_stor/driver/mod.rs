@@ -32,13 +32,10 @@ impl DriverUninit {
         }
     }
     
-    pub fn init(self) -> DriverInitResult {
-        let path = self.path;
-        
-        println!("czytam {:?}", path);
-        
+    pub fn init(&mut self) -> DriverInitResult {
+
         let mut files_count = 0;
-        let dir_list = read_dir(path.as_path()).unwrap();
+        let dir_list = read_dir(self.path.as_path()).unwrap();
         
         let mut map: HashMap<u8, DriverUninit> = HashMap::new();            //TODO - remove type
         
@@ -76,13 +73,13 @@ impl DriverUninit {
         if map.len() > 0 {
 
             DriverInitResult::Dirs(DriverDir {
-                path: path
+                path: self.path.clone()
             }, map)
 
         } else {
 
             DriverInitResult::Files(DriverFiles {
-                path: path
+                path: self.path.clone()
             }, files_count)
         }
     }
