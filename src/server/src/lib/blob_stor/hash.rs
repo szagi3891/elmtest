@@ -17,14 +17,15 @@ impl<'a> Hash<'a> {
         }
     }
     
-    pub fn make_path(&self, path: PathBuf) -> PathBuf {
+    pub fn add_to_path(&self, path: &mut PathBuf) {
         let hash_str = str::from_utf8(self.hash).unwrap();
         path.push(hash_str);
-        path
+        //path
     }
 
     pub fn get_prefix(&self) -> (u8, Hash) {
-        
+                                                //TODO - użyć sprytnej funkcji do podziału
+                                                //https://doc.rust-lang.org/std/primitive.slice.html#method.split_first
         if (self.hash.len() > 2) {
             
             let char1 = hexToDigit(self.hash[0]);
@@ -45,4 +46,6 @@ impl<'a> Hash<'a> {
 
 fn hexToDigit(char: u8) -> u8 {
     15
+    to_digit(16)
+    assert_eq!(u32::from_str_radix("A", 16), Ok(10));
 }

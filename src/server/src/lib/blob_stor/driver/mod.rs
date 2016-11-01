@@ -83,7 +83,7 @@ impl DriverFiles {
     pub fn set(&self, hash: &Hash, content: &[u8]) -> bool {
 
         let mut path = self.path.clone();
-        path.push(hash.as_str());
+        hash.add_to_path(&mut path);
 
         set_file(path.as_path(), content)
     }
@@ -91,7 +91,7 @@ impl DriverFiles {
     pub fn get(&self, hash: &Hash) -> Vec<u8> {
         
         let mut path = self.path.clone();
-        path.push(hash.as_str());
+        hash.add_to_path(&mut path);
 
         get_file(path.as_path())
     }
