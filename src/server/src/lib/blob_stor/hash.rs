@@ -1,51 +1,85 @@
 use std::path::PathBuf;
 use std::str;
+use std::u8;
 
 use lib::blob_stor::hex::to_hex;
 
-pub struct Hash<'a> {
-    hash: &'a [u8],
+pub struct Hash {
+    hash: [u8; 20],
 }
 
-impl<'a> Hash<'a> {
-    pub fn new(hash: &'a [u8]) -> Hash {
-        
-        //TODO - trzeba sprawdzić czy to jest poprawny hex
+impl Hash {
+    pub fn new(hash: [u8; 40]) -> Hash {
         
         Hash {
-            hash: hash
+            hash: convertToHex(&hash[..])
+        }
+    }
+    
+    pub fn from_bytes(hash: &[u8]) -> Hash {
+        
+        if (hash.len() != 40) {
+            panic!("nieprawidłowa długość {:?}", hash.len());
+        }
+        
+        Hash {
+            hash: convertToHex(hash)
         }
     }
     
     pub fn add_to_path(&self, path: &mut PathBuf) {
-        let hash_str = str::from_utf8(self.hash).unwrap();[""]
+        
+        unimplemented!();
+        
+        /*
+        let hash_str = str::from_utf8(self.hash).unwrap();
         path.push(hash_str);
+        */
         //path
     }
 
-    pub fn get_prefix(&self) -> (u8, Hash) {
-                                                //TODO - użyć sprytnej funkcji do podziału
-                                                //https://doc.rust-lang.org/std/primitive.slice.html#method.split_first
-        if (self.hash.len() > 2) {
-            
-            let char1 = hexToDigit(self.hash[0]);
-            let char2 = hexToDigit(self.hash[1]);
-            
-            let prefix = char1 * 16 + char2;
-            let sub_hash = Hash {
-                hash: &self.hash[2..]
-            };
-            
-            return (prefix, sub_hash);
-            
-        } else {
-            panic!("Brak danych na których można przeprowadzić tą operację");
-        }
+    pub fn get_prefix(&self, pos: usize) -> u8 {
+        self.hash[pos]
     }
 }
 
+fn convertToHex(hash: &[u8]) -> [u8; 20] {
+    
+    let mut out = [0; 20];
+    
+    for index in 0..19 {
+        let (_, tail) = hash.split_at(2 * index);
+        let (range, _) = tail.split_at(2);
+        
+        out[index] = fromHex(range);
+    }
+    
+    out
+}
+
+fn fromHex(slice: &[u8]) -> u8 {
+    
+    let slice_str = str::from_utf8(&slice).unwrap();
+    u8::from_str_radix(slice_str, 16).unwrap()
+}
+
+/*
 fn hexToDigit(char: u8) -> u8 {
     15
     to_digit(16)
     assert_eq!(u32::from_str_radix("A", 16), Ok(10));
 }
+*/
+
+/*
+extern crate "rustc-serialize" as rustc_serialize;
+use rustc_serialize::hex::FromHex;
+
+fn hex2string(x: &str) -> Option<String> {
+    x.from_hex().ok().and_then(|x| String::from_utf8(x).ok())
+}
+
+fn main() {
+    println!("{}", hex2string("41706f70686973").unwrap());
+}
+*/

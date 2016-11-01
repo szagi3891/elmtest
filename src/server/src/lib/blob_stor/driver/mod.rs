@@ -114,8 +114,8 @@ impl DriverFiles {
         let mut counters: HashMap<u8, u32> = HashMap::new();
         
         for item in list {
-            let hash = Hash::new(item.as_bytes());
-            let (prefix, sub_hash) = hash.get_prefix();
+            let hash = Hash::from_bytes(item.as_bytes());
+            let prefix = hash.get_prefix(0);
             
             println!("iteracja: {:?}", prefix);
         }
