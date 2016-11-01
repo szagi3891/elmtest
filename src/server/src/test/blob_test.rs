@@ -28,7 +28,7 @@ pub fn test(path: PathBuf) {
         set(&mut stor, text.as_str());
     }
     
-    if stor.get("fc401e452f718439191c4fa43262d2e0024871cb").as_slice() == "dsadasdsa dasdasdas dasdasd aaa 222".as_bytes() {
+    if stor.get("fc401e452f718439191c4fa43262d2e0024871cb".as_bytes()).as_slice() == "dsadasdsa dasdasdas dasdasd aaa 222".as_bytes() {
         println!("pobranie ok");
     } else {
         panic!("problem z pobraniem");
@@ -45,5 +45,5 @@ fn set(stor: &mut BlobStor, text: &str) {
     let hex = hasher.result_str();
     //assert_eq!(hex, "2aae6c35c94fcfb415dbe95f408b9ce91ee846ed");
 
-    stor.set(hex.as_str(), text.as_bytes());
+    stor.set(hex.as_bytes(), text.as_bytes());
 }

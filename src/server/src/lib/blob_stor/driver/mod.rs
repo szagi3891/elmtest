@@ -5,11 +5,12 @@ use lib::blob_stor::hash::Hash;
 use lib::blob_stor::driver::init_dir::{init_dir, DriverInitDirResult};
 use lib::blob_stor::driver::set_file::set_file;
 use lib::blob_stor::driver::get_file::get_file;
+use lib::blob_stor::driver::list_file::list_file;
 
 mod init_dir;
 mod set_file;
 mod get_file;
-
+mod list_file;
 
 pub struct DriverUninit {
     path: PathBuf,
@@ -93,6 +94,44 @@ impl DriverFiles {
         path.push(hash.as_str());
 
         get_file(path.as_path())
+    }
+    
+    pub fn transformToDir(&self) -> (DriverDir, HashMap<u8, (DriverFiles, u32)>) {
+        
+        /*
+            kolejno iteruj po każdym z pliku
+            
+            iteracja
+                nie ma katalogu z przedrostkiem, to go stwó©z
+                przenieś plik
+                zwiększ licznik
+            
+            skonwertuj mapę, na prawidłową wyjściową mapę ...
+        */
+        
+        let list = list_file(self.path.as_path());
+        
+        let mut counters: HashMap<u8, u32> = HashMap::new();
+        
+        for item in list {
+            let hash = Hash::new(item.as_bytes());
+            let (prefix, sub_hash) = hash.get_prefix();
+            
+            println!("iteracja: {:?}", prefix);
+        }
+        
+        
+        panic!("STOP transformacji");
+/*
+        
+        
+        
+        let driver = DriverDir {
+            path: self.path.clone(),                    //TODO - remove clone
+        };
+        
+        return (driver, HashMap::new());        //TODO - temp
+*/
     }
 }
 

@@ -26,11 +26,11 @@ impl BlobStor {
         }
     }
 
-    pub fn get(&mut self, hash: &str) -> Vec<u8> {
+    pub fn get(&mut self, hash: &[u8]) -> Vec<u8> {
         self.root.get(Hash::new(hash))
     }
     
-    pub fn set(&mut self, hash: &str, content: &[u8]) {
+    pub fn set(&mut self, hash: &[u8], content: &[u8]) {
         self.root.set(Hash::new(hash), content)
     }
 }

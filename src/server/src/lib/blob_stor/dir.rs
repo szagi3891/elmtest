@@ -33,8 +33,12 @@ enum DirGetCommand {
 impl Dir {
 
     pub fn new_uninit(driver: DriverUninit, max_file: u32) -> Dir {
+        Dir::new_from_mode(DirMode::Uninitialized(driver), max_file)
+    }
+
+    fn new_from_mode(dir_mode: DirMode, max_file: u32) -> Dir {
         Dir {
-            inner: Arc::new(RwLock::new(DirMode::Uninitialized(driver))),
+            inner: Arc::new(RwLock::new(dir_mode)),
             max_file: max_file,
         }
     }
@@ -187,14 +191,29 @@ impl Dir {
         
         let new_content_opt = match *guard {
             DirMode::ContentFiles(ref file_driver, _) => {
-                //transformuj środek
+                
+                                                        //TODO - Trzeba usprawnić tą funkcję, żeby od razy właściwa mapa była zwaracana
+                let (dir_driver, mut map) = file_driver.transformToDir();
+                
+                let mut map_dir = HashMap::new();
+                
+                for (key, (file_driver, count)) in map.drain() {
+                    
+                    let value = DirMode::ContentFiles(file_driver, FileCounter::new(count));
+                    let dir = Dir::new_from_mode(value, self.max_file);
+                    map_dir.insert(key, dir);
+                }
+                
+                Some(DirMode::ContentDir(dir_driver, map_dir))
             },
             _ => None,
         };
         
-        
-        
-        //TODO - trzeba przebudować ten katalog zawierający pliki, na katalog zawierający podkatalogi
-        unimplemented!();
+        match new_content_opt {
+            Some(mut new_content) => {
+                replace(&mut *guard, new_content);
+            },
+            None => {},
+        };
     }
 }
