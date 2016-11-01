@@ -83,9 +83,7 @@ impl Dir {
                 },
 
                 DirSetCommand::NeedRebuildToSubDir => {
-
-                    //TODO - trzeba przebudować ten katalog zawierający pliki, na katalog zawierający podkatalogi
-                    unimplemented!();
+                    self.transformToDirDriver();
                 },
                 
                 DirSetCommand::NeedSubDir(_) => {
@@ -104,7 +102,10 @@ impl Dir {
             DirMode::Uninitialized(_) => DirGetCommand::NeedInit,
             
             DirMode::ContentFiles(ref file_driver, ref file_counter) => {
-                DirGetCommand::Success(file_driver.get(hash))
+                let reader_lock = file_counter.get_reader_lock();
+                let content = file_driver.get(hash);
+                reader_lock.free();
+                DirGetCommand::Success(content)
             }
             
             DirMode::ContentDir(_, _) => {
@@ -142,7 +143,8 @@ impl Dir {
                 //istnieje
                     //odpal metodę set na tym podkatalogu
                 //nie istnieje
-                    DirSetCommand::NeedSubDir(0x43)         //TODO
+                    //DirSetCommand::NeedSubDir(0x43)         //TODO
+                unimplemented!();
             },
         }
     }
@@ -178,5 +180,21 @@ impl Dir {
             },
             None => {},
         };
+    }
+    
+    fn transformToDirDriver(&mut self) {
+        let mut guard = self.inner.write().unwrap();
+        
+        let new_content_opt = match *guard {
+            DirMode::ContentFiles(ref file_driver, _) => {
+                //transformuj środek
+            },
+            _ => None,
+        };
+        
+        
+        
+        //TODO - trzeba przebudować ten katalog zawierający pliki, na katalog zawierający podkatalogi
+        unimplemented!();
     }
 }

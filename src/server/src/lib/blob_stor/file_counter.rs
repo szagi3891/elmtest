@@ -1,4 +1,4 @@
-use std::sync::{RwLock, RwLockWriteGuard};
+use std::sync::{RwLock, RwLockWriteGuard, RwLockReadGuard};
 use std::sync::Arc;
 
 pub struct FileCounter {
@@ -7,6 +7,11 @@ pub struct FileCounter {
 
 pub struct FileCounterIncrease<'a> {
     inner: RwLockWriteGuard<'a, u32>
+}
+
+
+pub struct FileCounterReaderLock<'a> {
+    inner: RwLockReadGuard<'a, u32>
 }
 
 impl FileCounter {
@@ -24,6 +29,15 @@ impl FileCounter {
             inner: counter
         }
     }
+    
+    pub fn get_reader_lock(&self) -> FileCounterReaderLock {
+
+        let counter = self.inner.read().unwrap();
+        
+        FileCounterReaderLock {
+            inner: counter
+        }
+    }
 }
 
 impl<'a> FileCounterIncrease<'a> {
@@ -34,5 +48,10 @@ impl<'a> FileCounterIncrease<'a> {
     
     pub fn inc(mut self) {
         *self.inner += 1;
+    }
+}
+
+impl<'a> FileCounterReaderLock<'a> {
+    pub fn free(self) {
     }
 }
