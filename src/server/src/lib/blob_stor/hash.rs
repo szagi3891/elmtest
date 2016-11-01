@@ -18,7 +18,7 @@ impl<'a> Hash<'a> {
     }
     
     pub fn add_to_path(&self, path: &mut PathBuf) {
-        let hash_str = str::from_utf8(self.hash).unwrap();
+        let hash_str = str::from_utf8(self.hash).unwrap();[""]
         path.push(hash_str);
         //path
     }
