@@ -39,8 +39,8 @@ impl Hash {
         path.push(out);
     }
 
-    pub fn get_prefix(&self, pos: usize) -> u8 {
-        self.hash[pos]
+    pub fn get_prefix(&self, pos: u8) -> u8 {
+        self.hash[pos as usize]
     }
 }
 

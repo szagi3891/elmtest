@@ -26,11 +26,15 @@ impl BlobStor {
         }
     }
 
-    pub fn get(&mut self, hash: &[u8]) -> Vec<u8> {
-        self.root.get(Hash::from_bytes(hash))
+    pub fn get(&mut self, hash_slice: &[u8]) -> Vec<u8> {
+        
+        let hash = Hash::from_bytes(hash_slice);
+        self.root.get(&hash)
     }
     
-    pub fn set(&mut self, hash: &[u8], content: &[u8]) {
-        self.root.set(Hash::from_bytes(hash), content)
+    pub fn set(&mut self, hash_slice: &[u8], content: &[u8]) {
+        
+        let hash = Hash::from_bytes(hash_slice);
+        self.root.set(&hash, content)
     }
 }

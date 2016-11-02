@@ -16,17 +16,17 @@ mod list_file;
 
 pub struct DriverUninit {
     path: PathBuf,
-    level: usize,           //TODO - może da się zastąpić typ przez u8
+    level: u8,
 }
 
 pub struct DriverFiles {
     path: PathBuf,
-    level: usize,
+    level: u8,
 }
 
 pub struct DriverDir {
     path: PathBuf,
-    level: usize,
+    level: u8,
 }
 
 pub enum DriverInitResult {
@@ -105,18 +105,9 @@ impl DriverFiles {
         get_file(path.as_path())
     }
     
+    //TODO - wynieść tą metodę do osobnego pliku
+
     pub fn transformToDir(&self) -> (DriverDir, HashMap<u8, (DriverFiles, u32)>) {
-        
-        /*
-            kolejno iteruj po każdym z pliku
-            
-            iteracja
-                nie ma katalogu z przedrostkiem, to go stwó©z
-                przenieś plik
-                zwiększ licznik
-            
-            skonwertuj mapę, na prawidłową wyjściową mapę ...
-        */
         
         let list = list_file(self.path.as_path());
         
@@ -167,3 +158,8 @@ impl DriverFiles {
     }
 }
 
+impl DriverDir {
+    pub fn get_level(&self) -> u8 {
+        self.level
+    }
+}

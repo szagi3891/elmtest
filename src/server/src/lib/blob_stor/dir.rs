@@ -43,7 +43,7 @@ impl Dir {
         }
     }
 
-    pub fn get(&mut self, hash: Hash) -> Vec<u8> {
+    pub fn get(&mut self, hash: &Hash) -> Vec<u8> {
         
         let mut count_loop = 0;
         
@@ -66,7 +66,7 @@ impl Dir {
         }
     }
     
-    pub fn set(&mut self, hash: Hash, content: &[u8]) {
+    pub fn set(&mut self, hash: &Hash, content: &[u8]) {
         
         let mut count_loop = 0;
         
@@ -120,7 +120,7 @@ impl Dir {
 
     fn set_exec(&mut self, hash: &Hash, content: &[u8]) -> DirSetCommand {
         
-        let guard = self.inner.read().unwrap();
+        let mut guard = self.inner.read().unwrap();
 
         match *guard {
 
@@ -142,13 +142,18 @@ impl Dir {
                 }
             },
 
-            DirMode::ContentDir(_, _) => {
-                //weź podkatalog
-                //istnieje
-                    //odpal metodę set na tym podkatalogu
-                //nie istnieje
-                    //DirSetCommand::NeedSubDir(0x43)         //TODO
-                unimplemented!();
+            DirMode::ContentDir(ref dir_driver, ref map) => {
+                
+                let level = dir_driver.get_level();
+                let prefix = hash.get_prefix(level);
+
+                match map.get(&prefix) {
+                    Some(sub_dir) => {
+                        sub_dir.set(hash, content);
+                        DirSetCommand::Success
+                    },
+                    None => DirSetCommand::NeedSubDir(prefix)
+                }
             },
         }
     }
