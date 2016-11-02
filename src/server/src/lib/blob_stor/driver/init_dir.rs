@@ -14,43 +14,40 @@ pub fn init_dir(path: &Path) -> DriverInitDirResult {
 
     let mut map: HashMap<u8, PathBuf> = HashMap::new();            //TODO - remove type
 
-    'nextitem : for path in dir_list {
+    for path in dir_list {
 
         let item = path.unwrap();
         let metadata = item.metadata().unwrap();
 
         if (metadata.is_file()) {
-            files_count += 1;
-            continue 'nextitem;                
-        }
 
-        if (metadata.is_dir()) {
+            files_count += 1;
+
+        } else if (metadata.is_dir()) {
+
             let file_name = item.file_name();
             let file_str = file_name.to_str().unwrap();
 
             if file_str.len() == 2 {
 
-                println!("katalog {}", file_str);
+                //TODO - sprawdzić czy na pewno nazwy są małymi literami
+                
+                let prefix = u8::from_str_radix(file_str, 16).unwrap();
+                
+                assert_eq!(map.insert(prefix, item.path()), None);
 
-                //TODO , trzeba
-                unimplemented!();
-
-                continue 'nextitem;
+            } else {
+                panic!("incorrect contents of a directory");
             }
 
+        } else {
             panic!("incorrect contents of a directory");
-
         }
-
-        panic!("incorrect contents of a directory");
     }
 
     if map.len() > 0 {
-
         DriverInitDirResult::Dirs(map)
-        
     } else {
-
         DriverInitDirResult::Files(files_count)
     }
 }

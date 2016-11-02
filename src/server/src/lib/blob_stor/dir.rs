@@ -43,7 +43,7 @@ impl Dir {
         }
     }
 
-    pub fn get(&mut self, hash: &Hash) -> Vec<u8> {
+    pub fn get(&self, hash: &Hash) -> Vec<u8> {
         
         let mut count_loop = 0;
         
@@ -66,7 +66,7 @@ impl Dir {
         }
     }
     
-    pub fn set(&mut self, hash: &Hash, content: &[u8]) {
+    pub fn set(&self, hash: &Hash, content: &[u8]) {
         
         let mut count_loop = 0;
         
@@ -98,7 +98,7 @@ impl Dir {
         }
     }
 
-    fn get_exec(&mut self, hash: &Hash) -> DirGetCommand {
+    fn get_exec(&self, hash: &Hash) -> DirGetCommand {
         
         let guard = self.inner.read().unwrap();
         
@@ -118,7 +118,7 @@ impl Dir {
         }
     }
 
-    fn set_exec(&mut self, hash: &Hash, content: &[u8]) -> DirSetCommand {
+    fn set_exec(&self, hash: &Hash, content: &[u8]) -> DirSetCommand {
         
         let mut guard = self.inner.read().unwrap();
 
@@ -158,7 +158,7 @@ impl Dir {
         }
     }
 
-    fn initialize(&mut self) {
+    fn initialize(&self) {
         
         let mut guard = self.inner.write().unwrap();
         
@@ -169,14 +169,29 @@ impl Dir {
                 match driver.init() {
                     
                     DriverInitResult::Files(driver_files, files_count) => {
-
                         Some(DirMode::ContentFiles(driver_files, FileCounter::new(files_count)))
                     },
 
-                    DriverInitResult::Dirs(map, driver_dir) => {
+                    DriverInitResult::Dirs(driver_dir, mut map_drivers) => {
+                        
+                        let mut map_dir = HashMap::new();
+                
+                        for (key, item_driver) in map_drivers.drain() {
 
-                        //TODO - odczytanie początkowej struktury katalogu
-                        unimplemented!();
+                            let dir_mode = DirMode::Uninitialized(item_driver);
+                            let dir_item = Dir::new_from_mode(dir_mode, self.max_file);
+                            
+                            map_dir.insert(key, dir_item);
+                            
+                                            //TODO - sprawdzać czy na wyjściu jest None
+                            /*
+                            if Some(xx) = map_dir.insert(key, dir_item) {
+                                panic!("spodziewano się None");
+                            }
+                            */
+                        }
+                        
+                        Some(DirMode::ContentDir(driver_dir, map_dir))
                     },
                 }
             },
@@ -191,7 +206,7 @@ impl Dir {
         };
     }
     
-    fn transformToDirDriver(&mut self) {
+    fn transformToDirDriver(&self) {
         let mut guard = self.inner.write().unwrap();
         
         let new_content_opt = match *guard {
