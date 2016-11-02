@@ -120,7 +120,7 @@ impl DriverFiles {
         
         let list = list_file(self.path.as_path());
         
-        let mut counters: HashMap<u8, u32> = HashMap::new();
+        let mut counters: HashMap<u8, (DriverFiles, u32)> = HashMap::new();
         
         for item_from_path in list {
 
@@ -136,33 +136,34 @@ impl DriverFiles {
             item_path_to.push(item_name);
             
             let need_create = match counters.get_mut(&prefix) {
-                Some(count) => {
+                Some(&mut (_, ref mut count)) => {
                     *count += 1;
                     false
                 },
                 None => true,
             };
             
-            if need_create {    
+            if need_create {
+                
                 fs::create_dir(&path_to).unwrap();
-                counters.insert(prefix, 1);
+                
+                let driver = DriverFiles {
+                    path: path_to.clone(),
+                    level: self.level + 1,
+                };
+                
+                counters.insert(prefix, (driver, 1));
             }
 
-            println!("\n\n {:?} \n {:?} \n {:?} \n {:?} \n {:?} \n\n", item_from_path, item_name, path_to, prefix, item_path_to);
+            fs::rename(&item_from_path, &item_path_to).unwrap();
         }
-        
-        
-        panic!("STOP transformacji");
-/*
-        
-        
-        
-        let driver = DriverDir {
-            path: self.path.clone(),                    //TODO - remove clone
+    
+        let self_driver = DriverDir {
+            path: self.path.clone(),
+            level: self.level,
         };
-        
-        return (driver, HashMap::new());        //TODO - temp
-*/
+
+        return (self_driver, counters);
     }
 }
 
