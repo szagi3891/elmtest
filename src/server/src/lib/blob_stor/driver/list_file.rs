@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::fs::read_dir;
 
-pub fn list_file(path: &Path) -> Vec<String> {
+pub fn list_file(path: &Path) -> Vec<PathBuf> {
     
     let dir_list = read_dir(path).unwrap();
     let mut out = Vec::new();
@@ -13,8 +13,7 @@ pub fn list_file(path: &Path) -> Vec<String> {
         let metadata = item.metadata().unwrap();
         
         if (metadata.is_file()) {
-            let file_name = item.file_name().into_string().unwrap();
-            out.push(file_name);
+            out.push(item.path());
         } else {
             panic!("Spodziewano się wyłącznie samych plików w katalogu: {:?}", path);
         }

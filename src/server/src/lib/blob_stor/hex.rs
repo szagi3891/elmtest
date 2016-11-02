@@ -19,7 +19,7 @@ pub fn to_hex(input: &[u8]) -> String {
     let mut out = String::new();
 
     for &byte in input {
-        write!(&mut out, "{:x}", byte).unwrap();
+        write!(&mut out, "{:02x}", byte).unwrap();
     }
 
     out
