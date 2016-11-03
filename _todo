@@ -14,6 +14,19 @@ BlobStorage
     metody drivera porozdzielać na mniejsze pliczki
     aby odsłonić główną logikę driverów
 
+BlobStore
+    bariera na dysk
+    przykładowo 100 jednoczestnych odczytów, 10 zapisów
+
+BlobStore - tryb testowania
+    np. 100 wątków
+    naparzanie z zapisami i odczytami
+    pod koniec testu, porównanie danych z katalogo z tym co powinno się tam znaleźć
+
+Tryb GC
+    BlobStore, nowe metody getPath, setPath
+    pozwoli to na wydajniejsze przenoszenie blobów do nowej lokalizacji
+
 https://crates.io/crates/uuid
 
 https://crates.io/crates/rust-crypto
