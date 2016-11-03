@@ -27,7 +27,7 @@ enum DirSetCommand {
 
 enum DirGetCommand {
     NeedInit,
-    Success(Vec<u8>),
+    Success(Option<Vec<u8>>),
 }
 
 impl Dir {
@@ -43,7 +43,7 @@ impl Dir {
         }
     }
 
-    pub fn get(&self, hash: &Hash) -> Vec<u8> {
+    pub fn get(&self, hash: &Hash) -> Option<Vec<u8>> {
         
         let mut count_loop = 0;
         
@@ -90,9 +90,8 @@ impl Dir {
                     self.transformToDirDriver();
                 },
                 
-                DirSetCommand::NeedSubDir(_) => {
-                    //TODO - trzeba utworzyć podkatalog o wskazanej nazwie
-                    unimplemented!();
+                DirSetCommand::NeedSubDir(prefix) => {
+                    self.createSubDir(prefix);
                 }
             }
         }
@@ -109,11 +108,19 @@ impl Dir {
                 let reader_lock = file_counter.get_reader_lock();
                 let content = file_driver.get(hash);
                 reader_lock.free();
-                DirGetCommand::Success(content)
+                DirGetCommand::Success(Some(content))
             }
             
-            DirMode::ContentDir(_, _) => {
-                unimplemented!();
+            DirMode::ContentDir(ref dir_driver, ref map) => {
+                let level = dir_driver.get_level();
+                let prefix = hash.get_prefix(level);
+                
+                let result = match map.get(&prefix) {
+                    Some(item) => item.get(hash),
+                    None => None,
+                };
+
+                DirGetCommand::Success(result)
             }
         }
     }
@@ -225,6 +232,38 @@ impl Dir {
                 }
                 
                 Some(DirMode::ContentDir(dir_driver, map_dir))
+            },
+            _ => None,
+        };
+        
+        match new_content_opt {
+            Some(mut new_content) => {
+                replace(&mut *guard, new_content);
+            },
+            None => {},
+        };
+    }
+
+    fn createSubDir(&self, prefix: u8) {
+        let mut guard = self.inner.write().unwrap();
+        
+        let new_content_opt = match *guard {
+            DirMode::ContentDir(ref dir_driver, ref mut map) => {
+                
+                match map.get(&prefix) {
+                    Some(_) => {
+                        return;
+                    },
+                    _ => {}
+                };
+                
+                let files_driver = dir_driver.create_dir(prefix);
+                let dir_mode = DirMode::ContentFiles(files_driver, FileCounter::new(0));
+                let dir_item = Dir::new_from_mode(dir_mode, self.max_file);
+                
+                map.insert(prefix, dir_item);
+
+                None
             },
             _ => None,
         };

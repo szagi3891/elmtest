@@ -23,12 +23,12 @@ pub fn test(path: PathBuf) {
     set(&mut stor, text4);
     set(&mut stor, text5);
     
-    for i in 1..10 {
+    for i in 1..10000 {
         let text = format!("automatyczny {:?}", i);
         set(&mut stor, text.as_str());
     }
     
-    if stor.get("fc401e452f718439191c4fa43262d2e0024871cb".as_bytes()).as_slice() == "dsadasdsa dasdasdas dasdasd aaa 222".as_bytes() {
+    if stor.get("fc401e452f718439191c4fa43262d2e0024871cb".as_bytes()).unwrap().as_slice() == "dsadasdsa dasdasdas dasdasd aaa 222".as_bytes() {
         println!("pobranie ok");
     } else {
         panic!("problem z pobraniem");

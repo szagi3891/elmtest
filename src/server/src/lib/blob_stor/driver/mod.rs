@@ -162,4 +162,18 @@ impl DriverDir {
     pub fn get_level(&self) -> u8 {
         self.level
     }
+    
+    pub fn create_dir(&self, prefix: u8) -> DriverFiles {
+        
+        let mut path = self.path.clone();
+        path.push(to_hex(&[prefix]));
+        
+        fs::create_dir(path.as_path()).unwrap();
+
+        DriverFiles {
+            path: path,
+            level: self.level + 1,
+        }
+    }
+                
 }

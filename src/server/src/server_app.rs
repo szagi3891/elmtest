@@ -6,10 +6,11 @@ use std::path::PathBuf;
 
 use lib::router::Router;
 use lib::outresponse::OutResponse;
+use lib::blob_stor::BlobStor;
 
 
 pub struct ServerApp {
-    data: PathBuf,                              //TODO - użyć Cow
+    stor: BlobStor,
     static_path: HashMap<String, String>,
 }
 
@@ -23,8 +24,8 @@ impl Handler for ServerApp {
                 let out_response = OutResponse::new(res);
 
                 process_router(
+                    &self.stor,
                     router,
-                    self.data.clone(),
                     &(self.static_path),
                     out_response
                 );
@@ -39,7 +40,7 @@ impl Handler for ServerApp {
 pub fn start_server(data_path: PathBuf, static_path: HashMap<String, String>) {
 
     let app = ServerApp {
-        data: data_path,
+        stor: BlobStor::new(data_path, 1000),
         static_path: static_path
     };
 
