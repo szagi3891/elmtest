@@ -11,6 +11,13 @@ pub struct HeadManager {
 
 impl HeadManager {
 	pub fn new(base_path: PathBuf, max_file: u32) -> HeadManager {
+        
+        /*
+            blob - katalog na bloby
+            head - katalog w którym będą znajdowały się informacje o headach
+                z każdą zmianą, będzie się tworzył nowy plik w tym miejscu z kolejną datą
+        */
+        
 		HeadManager {
 			inner: Arc::new(RwLock::new([0; 20])),
 			stor: BlobStor::new(base_path, max_file),
