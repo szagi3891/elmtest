@@ -6,11 +6,11 @@ use std::path::PathBuf;
 
 use lib::router::Router;
 use lib::outresponse::OutResponse;
-use lib::blob_stor::BlobStor;
+use lib::head_manager::HeadManager;
 
 
 pub struct ServerApp {
-    stor: BlobStor,
+    head_manager: HeadManager,
     static_path: HashMap<String, String>,
 }
 
@@ -24,7 +24,7 @@ impl Handler for ServerApp {
                 let out_response = OutResponse::new(res);
 
                 process_router(
-                    &self.stor,
+                    &self.head_manager,
                     router,
                     &(self.static_path),
                     out_response
@@ -40,7 +40,7 @@ impl Handler for ServerApp {
 pub fn start_server(data_path: PathBuf, static_path: HashMap<String, String>) {
 
     let app = ServerApp {
-        stor: BlobStor::new(data_path, 1000),
+        head_manager: HeadManager::new(data_path, 1000),
         static_path: static_path
     };
 

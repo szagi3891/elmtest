@@ -3,13 +3,13 @@ use std::collections::HashMap;
 use lib::router::Router;
 use lib::outresponse::OutResponse;
 use lib::response_type::ResponseType;
-use lib::blob_stor::BlobStor;
+use lib::head_manager::HeadManager;
 
 mod serve_static;
 mod serve_old_api;
 
 pub fn process_router<'a>(
-    stor: &BlobStor,
+    head_manager: &HeadManager,
     mut router: Router<'a>,
     static_path: &'a HashMap<String, String>,
     out_response: OutResponse
