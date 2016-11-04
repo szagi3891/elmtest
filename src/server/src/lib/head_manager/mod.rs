@@ -34,8 +34,8 @@ prev -> hash | null
 time -> u64 - czas utworzenia
 
 dir:
-nazwa elementu -> hash
-nazwa elementu -> hash
+nazwa elementu -> typ -> hash
+nazwa elementu -> typ -> hash
 
 plik:
 dane ...
@@ -43,8 +43,11 @@ dane ...
 metody :
 
 1
-get_head -> HASH
+get_head path:PATH-> HASH
     pobiera aktualnego head-a
+    path - aktualnie wybrana ścieżka
+    zwraca nowego heada oraz obiekty które znajdują się na trasie wybranej ścieżki
+        jeśli ostatni head jest plikiem, to jest pomijany przy zwracaniu
 
 2
 upload content: [u8] -> UUID
