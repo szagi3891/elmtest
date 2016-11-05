@@ -68,3 +68,10 @@ elm i react
 https://medium.com/javascript-inside/building-a-react-redux-elm-bridge-8f5b875a9b76#.squiyotw1
 http://elm-lang.org/blog/how-to-use-elm-at-work
 
+nowa weersja elm : 0.18
+https://github.com/elm-lang/elm-platform/blob/master/upgrade-docs/0.18.md
+
+nawigacja w elm
+https://github.com/elm-lang/navigation
+https://github.com/elm-lang/navigation/blob/master/examples/Counter.elm
+
