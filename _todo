@@ -36,3 +36,30 @@ https://github.com/DaGenix/rust-crypto/
 
 #[must_use]
 przydałaby się taka opcja na wynik zwracany z funkcji
+
+
+upload plików w elm ...
+https://developer.mozilla.org/pl/docs/Using_files_from_web_applications
+https://gist.github.com/mmport80/68d142e346cf906f4d9d
+
+obsługa schowka systemowego w elm :
+http://claytonflesher.github.io/2016/11/01/copy-to-clipboard.html
+
+elm i redux + portowanie:
+https://medium.com/javascript-inside/building-a-react-redux-elm-bridge-8f5b875a9b76#.squiyotw1
+
+https://steemit.com/elm/@billstclair/elm-commands-and-subscriptions-and-ports-oh-my
+o portowaniu elma
+
+https://github.com/billstclair/elm-csp
+fajny bajerancki sposób odpalania elma
+
+https://terezka.github.io/elm-plot/
+rysowanie wykresów za pomocą elm-a
+
+ogsługa klawiatury :
+http://package.elm-lang.org/packages/scottcorgan/keyboard-combo/latest
+
+drzewo pitagorasa w elm
+https://github.com/samu/elm-pythagorastree/
+
