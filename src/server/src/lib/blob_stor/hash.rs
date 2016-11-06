@@ -2,8 +2,11 @@ use std::path::PathBuf;
 use std::str;
 use std::u8;
 
+use rustc_serialize::json::{Json, ToJson};
+
 use lib::blob_stor::hex::to_hex;
 
+#[derive(RustcDecodable, RustcEncodable)]
 pub struct Hash {
     hash: [u8; 20],
 }

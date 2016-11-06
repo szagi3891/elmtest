@@ -4,6 +4,7 @@ use std::path::PathBuf;
 
 use lib::blob_stor::BlobStor;
 use lib::head_manager::structs::head::Head;
+use lib::head_manager::structs::dir::Dir;
 
 mod structs;
 
@@ -35,5 +36,10 @@ impl HeadManager {
         //TODO - tymczasowa funkcja potrzebna do testów na tej strukturze
     pub fn test(&self) {
         println!("testuję coś se tam");
+        
+        let empty_dir = Dir::test_new_empty();
+        let empty_str = empty_dir.to_string();
+        
+        println!("zserializowany obiekt {:?}", empty_str);
     }
 }
