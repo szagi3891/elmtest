@@ -39,8 +39,16 @@ impl Handler for ServerApp {
 
 pub fn start_server(data_path: PathBuf, static_path: HashMap<String, String>) {
 
+    //TODO - generować dwie ścieżki
+        //ścieżka na czyste bloby "blobs"
+        //ścieżka na kolejne wersjie head-a
+    
+    let head_manager = HeadManager::new(data_path, 1000);
+    
+    head_manager.test();
+    
     let app = ServerApp {
-        head_manager: HeadManager::new(data_path, 1000),
+        head_manager: head_manager,
         static_path: static_path
     };
 

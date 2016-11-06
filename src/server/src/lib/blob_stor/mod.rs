@@ -2,7 +2,7 @@ use std::fs::create_dir;
 use std::path::PathBuf;
 
 mod dir;
-mod hash;
+pub mod hash;
 mod driver;
 mod file_counter;
 mod hex;

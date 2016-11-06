@@ -1,0 +1,64 @@
+
+typy danych
+
+head:
+root -> hash
+prev -> hash | null
+time -> u64 - czas utworzenia
+meta -> meta json
+    informacje o użytkowniku
+
+dir:
+nazwa elementu -> typ -> hash
+nazwa elementu -> typ -> hash
+
+plik:
+dane ...
+
+struktura HEAD {
+    hash: Hash
+    version: u32
+}
+
+metody :
+
+1
+get_head path:PATH-> HEAD
+    pobiera aktualnego head-a
+    path - aktualnie wybrana ścieżka
+    zwraca nowego heada oraz obiekty które znajdują się na trasie wybranej ścieżki
+        jeśli ostatni head jest plikiem, to jest pomijany przy zwracaniu
+
+2
+upload content: [u8] -> UUID
+    upload jakiegoś kontentu na serwer -> zwraca uuid tego kontentu
+
+3
+get_item hash: Hash -> [u8]
+    pobiera bloba                       Dir | File | Head
+
+4
+update_item head: Hash, path: Path, new_content: UUID -> HEAD           zwraca nowego aktualnego heada
+    aktualizacja item-a na serwerze
+
+5
+delete_item head: Hash, path: Path, item: string -> HEAD
+    usunięcie itema z jakiegoś katalogu
+
+6
+new_file: head: Hash, path: Path, item: string, content: UUID -> HEAD
+    utworzenie nowego pliku we wskazanej lokalizacji
+ 
+7
+new_dir: head: Hash, path: Path, item: string -> HEAD
+    utworzenie nowego katalogu we wskazanej lokalizacji
+
+8
+zmiana historii - do head2
+head -> head1 -> head2 -> head3 -> null
+nowa ścieżka
+head' -> head1' -> head2' -> null
+
+
+tworząc ciasteczko sesji, ma być w nim zapisana również informacja o ip komputera z którego nastąpiło logownanie
+po godzinnym braku aktywności ma nastąpić wylogowanie
