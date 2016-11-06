@@ -20,6 +20,12 @@ struct DirItem {
     head: Hash,
 }
 
+
+/*
+https://serde.rs/enum-number.html
+    serializowanie enuma
+*/
+
 impl Dir {
     pub fn new_empty() -> Dir {
         Dir {

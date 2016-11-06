@@ -1,5 +1,15 @@
+/*
+#![feature(proc_macro)]
+
+#[macro_use]
+extern crate serde_derive;
+
+extern crate serde_json;
+*/
+
 extern crate hyper;
 extern crate getopts;
+
 extern crate rustc_serialize;
 extern crate crypto;
 
