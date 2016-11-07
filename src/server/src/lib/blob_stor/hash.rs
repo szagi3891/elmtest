@@ -6,7 +6,7 @@ use rustc_serialize::json::{Json, ToJson};
 
 use lib::blob_stor::hex::to_hex;
 
-#[derive(RustcDecodable, RustcEncodable)]
+#[derive(RustcDecodable, RustcEncodable, Clone)]
 pub struct Hash {
     hash: [u8; 20],
 }
@@ -44,6 +44,12 @@ impl Hash {
 
     pub fn get_prefix(&self, pos: u8) -> u8 {
         self.hash[pos as usize]
+    }
+    
+                                                //TODO - dobrze byłoby to zrobić bez tylu alokacji przy serializowaniu danych
+    pub fn to_string(&self) -> String {
+        
+        to_hex(&self.hash)
     }
 }
 

@@ -3,28 +3,27 @@ use rustc_serialize::json;
 
 use lib::blob_stor::hash::Hash;
 
-#[derive(RustcDecodable, RustcEncodable)]
 pub struct Dir {
     list: HashMap<String, DirItem>,
 }
 
-#[derive(RustcDecodable, RustcEncodable)]
+#[derive(RustcDecodable, RustcEncodable, Clone)]
 enum KindType {
     File,
     Dir
 }
 
-#[derive(RustcDecodable, RustcEncodable)]
+#[derive(Clone)]
 struct DirItem {
     kind: KindType,
-    head: Hash,
+    hash: Hash,
 }
 
-
-/*
-https://serde.rs/enum-number.html
-    serializowanie enuma
-*/
+#[derive(RustcDecodable, RustcEncodable)]
+struct DirSerializeItem {
+    kind: KindType,
+    hash: String,
+}
 
 impl Dir {
     pub fn new_empty() -> Dir {
@@ -42,22 +41,38 @@ impl Dir {
         
         let test_item = DirItem {
             kind: KindType::File,
-            head: test_hash,
+            hash: test_hash,
         };
         
         let mut hash_test = HashMap::new();
         
+        let test_item2 = test_item.clone();
+
         hash_test.insert("cosik.txt".to_string(), test_item);
+        hash_test.insert("blablabla.jpg".to_string(), test_item2);
         
         Dir {
             list: hash_test
         }
     }
-    
+
     pub fn to_string(&self) -> String {
         
-        let encoded = json::encode(&self).unwrap();
+        let mut map = HashMap::new();
         
+        for (key, val) in self.list.iter() {
+
+            let item = DirSerializeItem {
+                kind: val.kind.clone(),
+                hash: val.hash.to_string(),
+            };
+
+            let key_clone = key.clone();
+            map.insert(key_clone, item);
+        }
+        
+        let encoded = json::encode(&map).unwrap();
+
         encoded
     }
 }
