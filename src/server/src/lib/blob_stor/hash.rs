@@ -2,8 +2,6 @@ use std::path::PathBuf;
 use std::str;
 use std::u8;
 
-use rustc_serialize::json::{Json, ToJson};
-
 use lib::blob_stor::hex::to_hex;
 
 #[derive(RustcDecodable, RustcEncodable, Clone)]
@@ -50,6 +48,15 @@ impl Hash {
     pub fn to_string(&self) -> String {
         
         to_hex(&self.hash)
+    }
+    
+    pub fn serialize(&self, out: &mut Vec<u8>) {        
+
+        let hash_hex = to_hex(&self.hash);
+
+        for item in hash_hex.as_bytes() {
+            out.push(*item);
+        }
     }
 }
 

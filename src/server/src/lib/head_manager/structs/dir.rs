@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use rustc_serialize::json;
+use std::io;
 
 use lib::blob_stor::hash::Hash;
 
@@ -7,7 +7,9 @@ pub struct Dir {
     list: HashMap<String, DirItem>,
 }
 
-#[derive(RustcDecodable, RustcEncodable, Clone)]
+                //#[derive(RustcDecodable, RustcEncodable, )]
+
+#[derive(Clone)]
 enum KindType {
     File,
     Dir
@@ -17,12 +19,6 @@ enum KindType {
 struct DirItem {
     kind: KindType,
     hash: Hash,
-}
-
-#[derive(RustcDecodable, RustcEncodable)]
-struct DirSerializeItem {
-    kind: KindType,
-    hash: String,
 }
 
 impl Dir {
@@ -56,23 +52,45 @@ impl Dir {
         }
     }
 
-    pub fn to_string(&self) -> String {
+    pub fn serialize(&self, out: &mut Vec<u8>) {
+        /*
+        let sign = "dir".as_bytes();
         
-        let mut map = HashMap::new();
-        
-        for (key, val) in self.list.iter() {
-
-            let item = DirSerializeItem {
-                kind: val.kind.clone(),
-                hash: val.hash.to_string(),
-            };
-
-            let key_clone = key.clone();
-            map.insert(key_clone, item);
+        for item in sign {
+            out.push(*item)
         }
         
-        let encoded = json::encode(&map).unwrap();
+        out.push(10);
+        */
 
-        encoded
+        for (key, val) in self.list.iter() {
+
+            val.hash.serialize(out);
+            out.push(32);
+            
+            match val.kind {
+                KindType::File => {
+                    out.push(48);
+                },
+                KindType::Dir => {
+                    out.push(49);
+                },
+            }
+
+            out.push(32);
+            
+            for item in key.as_bytes() {
+                out.push(*item);
+            }
+
+            out.push(10);
+        }
+    }
+    
+    pub fn deserialize(data_in: &[u8]) -> Dir {
+        //TODO - tymczasowo
+        Dir {
+            list: HashMap::new()
+        }
     }
 }

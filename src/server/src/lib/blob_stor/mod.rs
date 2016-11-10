@@ -26,13 +26,13 @@ impl BlobStor {
         }
     }
 
-    pub fn get(&mut self, hash_slice: &[u8]) -> Option<Vec<u8>> {
+    pub fn get(&self, hash_slice: &[u8]) -> Option<Vec<u8>> {
         
         let hash = Hash::from_bytes(hash_slice);
         self.root.get(&hash)
     }
     
-    pub fn set(&mut self, hash_slice: &[u8], content: &[u8]) {
+    pub fn set(&self, hash_slice: &[u8], content: &[u8]) {
         
         let hash = Hash::from_bytes(hash_slice);
         self.root.set(&hash, content)
