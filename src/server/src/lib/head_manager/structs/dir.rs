@@ -54,7 +54,17 @@ impl Dir {
 
     pub fn serialize(&self, out: &mut Vec<u8>) {
 
-        for (key, val) in self.list.iter() {
+        let mut sort_keys = Vec::new();
+        
+        for (key, _) in self.list.iter() {
+            sort_keys.push(key);
+        }
+        
+        sort_keys.sort();
+        
+        for key_name in sort_keys {
+            
+            let val = self.list.get(key_name).unwrap();
 
             val.hash.serialize(out);
             out.push(32);
@@ -70,7 +80,7 @@ impl Dir {
 
             out.push(32);
             
-            for item in key.as_bytes() {
+            for item in key_name.as_bytes() {
                 out.push(*item);
             }
 

@@ -41,6 +41,23 @@ fn verify(path: &Path, content: &[u8]) -> bool {
     println!("GET {:?}", path);
     
     let buf = get_file(path);
-
+/*
+    println!("-------------");
+    println!("1 -> {:?}", buf.as_slice());
+    print_slice(buf.as_slice());
+    println!("-------------");
+    println!("2 -> {:?}", content);
+    print_slice(content);
+    println!("-------------");
+*/
     return buf.as_slice() == content;
 }
+
+/*
+fn print_slice(content: &[u8]) {
+    let mut vec = Vec::new();
+    vec.extend_from_slice(content);
+    let str = String::from_utf8(vec);
+    println!("string -> {:?}", str);
+}
+*/
