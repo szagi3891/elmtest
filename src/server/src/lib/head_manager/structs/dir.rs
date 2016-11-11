@@ -102,7 +102,7 @@ impl Dir {
                     data_wsk = rest;
 
                     match map.insert(name, item) {
-                        None => {
+                        Some(_) => {
                             panic!("zduplikowane rekordy");
                         },
                         _ => {},
@@ -126,8 +126,8 @@ fn read_line(data_in: &[u8]) -> Option<(&[u8], &[u8])> {
 
     match data_in.iter().position(|r| *r == 10) {
         Some(index) => {
-            let first = &data_in[0..index-1];
-            let rest = &data_in[index..];
+            let first = &data_in[0..index];
+            let rest = &data_in[index+1..];
             Some((first, rest))
         },
         None => {
