@@ -53,15 +53,6 @@ impl Dir {
     }
 
     pub fn serialize(&self, out: &mut Vec<u8>) {
-        /*
-        let sign = "dir".as_bytes();
-        
-        for item in sign {
-            out.push(*item)
-        }
-        
-        out.push(10);
-        */
 
         for (key, val) in self.list.iter() {
 
@@ -88,9 +79,77 @@ impl Dir {
     }
     
     pub fn deserialize(data_in: &[u8]) -> Dir {
-        //TODO - tymczasowo
-        Dir {
-            list: HashMap::new()
+        
+        let mut map = HashMap::new();
+        
+        let mut data_wsk = data_in;
+
+        loop {
+            match read_line(data_wsk) {
+                Some((line, rest)) => {
+
+                    let (name, item) = create_item(line);
+                    data_wsk = rest;
+
+                    match map.insert(name, item) {
+                        None => {
+                            panic!("zduplikowane rekordy");
+                        },
+                        _ => {},
+                    };
+                },
+                None => {
+                    return Dir {
+                        list: map
+                    };
+                }
+            }
+        }        
+    }
+}
+
+fn read_line(data_in: &[u8]) -> Option<(&[u8], &[u8])> {
+    
+    if (data_in.len() == 0) {
+        return None;
+    }
+
+    match data_in.iter().position(|r| *r == 10) {
+        Some(index) => {
+            let first = &data_in[0..index-1];
+            let rest = &data_in[index..];
+            Some((first, rest))
+        },
+        None => {
+            panic!("nieprawidłowe dane");
         }
     }
+}
+
+
+fn create_item(line: &[u8]) -> (String, DirItem) {
+    
+    let hash_data = &line[0..40];
+    //40 pomijamy - to jest spacja
+    let item_type = line[41];
+    //42 pomijamy - spacja
+    let name = &line[43..];
+
+    let hash = Hash::from_bytes(hash_data);
+    
+    let kind = match item_type {
+        48 => KindType::File,
+        49 => KindType::Dir,
+        _ => panic!("nieprawidłowe dane"),
+    };
+    
+    let mut name_vec = Vec::new();
+    name_vec.extend_from_slice(name);
+
+    let name_str = String::from_utf8(name_vec).unwrap();
+    
+    (name_str, DirItem{
+        kind: kind,
+        hash: hash,
+    })
 }
