@@ -1,6 +1,8 @@
 use std::sync::RwLock;
 use std::sync::Arc;
 use std::path::PathBuf;
+use std::fs;
+use std::io::ErrorKind;
 
 use lib::blob_stor::BlobStor;
 use lib::head_manager::structs::head::Head;
@@ -10,28 +12,41 @@ mod structs;
 
 pub struct HeadManager {
 	inner: Arc<RwLock<Head>>,
-    stor: BlobStor
+    stor: BlobStor,
+    path_head: PathBuf,
 }
 
 impl HeadManager {
 	pub fn new(base_path: PathBuf, max_file: u32) -> HeadManager {
         
-        /*
-            blob - katalog na bloby
-            head - katalog w którym będą znajdowały się informacje o headach
-                z każdą zmianą, będzie się tworzył nowy plik w tym miejscu z kolejną datą
-        */
+        let path_blob = make_path(&base_path, "blob");              //katalog na bloby
+        let path_head = make_path(&base_path, "head");              //katalog z aktualnymi head-ami
+        
+        let last_head = Head::read_last(&path_head);
 
-        //TODO - trzeba zainicjować początkową strukturę
-        
-        let hash_str = [48; 40];        //40 x '0'
-        let version_start = 0;
-        
 		HeadManager {
-			inner: Arc::new(RwLock::new(Head::new(hash_str, version_start))),
-			stor: BlobStor::new(base_path, max_file),
+			inner: Arc::new(RwLock::new(last_head)),
+			stor: BlobStor::new(path_blob, max_file),
+            path_head: path_head,
 		}
 	}
+    
+    /*
+    HeadManagerError
+        wszystkie błędy użytkownika, które potem raportujemy jako odpowiedź
+    */
+/*
+    pub get_list(head: Hash, path: Vec<String>) -> Result<Vec<String>, HeadManagerError> {
+        //pobiera listę plików w żądanej ścieżce
+    }
+*/
+    /*
+        wczytaj obiekt head
+            przeczytaj namiar na root-a
+                wczytaj ten obiekt
+                    itdd, aż do otrzymania
+    */
+    
     
         //TODO - tymczasowa funkcja potrzebna do testów na tej strukturze
     pub fn test(&self) {
@@ -65,4 +80,26 @@ impl HeadManager {
             }
         }
     }
+}
+
+
+fn make_path(base_path: &PathBuf, sub_dir: &str) -> PathBuf {
+    let mut path = base_path.clone();
+    path.push(sub_dir);
+        
+    let result = fs::create_dir(&path);
+    
+    match result {
+        Ok(()) => {},
+        Err(error) => {
+            match error.kind() {
+                ErrorKind::AlreadyExists => {},
+                _ => {
+                    panic!("problem przy tworzeniu katalogu");
+                }
+            }
+        }
+    }
+    
+    return path;
 }
