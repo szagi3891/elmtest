@@ -5,6 +5,8 @@ use std::fs;
 use std::io::ErrorKind;
 
 use lib::blob_stor::BlobStor;
+use lib::blob_stor::hash::Hash;
+use lib::list_file::list_file;
 use lib::head_manager::structs::head::Head;
 use lib::head_manager::structs::dir::Dir;
 
@@ -22,7 +24,7 @@ impl HeadManager {
         let path_blob = make_path(&base_path, "blob");              //katalog na bloby
         let path_head = make_path(&base_path, "head");              //katalog z aktualnymi head-ami
         
-        let last_head = Head::read_last(&path_head);
+        let last_head = read_last(&path_head);
 
 		HeadManager {
 			inner: Arc::new(RwLock::new(last_head)),
@@ -102,4 +104,37 @@ fn make_path(base_path: &PathBuf, sub_dir: &str) -> PathBuf {
     }
     
     return path;
+}
+
+
+
+//TODO - przenieść tą funkcję, jako funkcję statyczną struktury Head
+
+pub fn read_last(path_head: &PathBuf) -> Head {
+
+    let list = list_file(path_head);
+    
+    println!("{:?}", list);
+    
+    /*
+        czytaj namiar na ostatniego head-a
+
+            jeśli go nie ma, to zainicjuj nowego pustego heada
+
+        jeśli jest
+            przeczytaj heada oraz numer wersji
+    */
+    //TODO - trzeba zainicjować początkową strukturę
+
+    /*
+        wszystkie pliki będą miały numer wersji oraz datę ładnie sformatowaną
+        będzie łatwiej posortować
+    */
+
+    let hash_str = [48; 40];        //40 x '0'
+    let version_start = 0;
+
+    let hash = Hash::new(hash_str);
+
+    Head::new(hash, version_start)
 }
