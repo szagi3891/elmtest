@@ -1,15 +1,18 @@
 use std::fs::create_dir;
 use std::path::PathBuf;
+use crypto::digest::Digest;
+use crypto::sha1::Sha1;
+
+use lib::blob_stor::hash::Hash;
+use lib::blob_stor::dir::Dir;
+use lib::blob_stor::driver::DriverUninit;
+
 
 mod dir;
 pub mod hash;
 mod driver;
 mod file_counter;
 mod hex;
-
-use lib::blob_stor::hash::Hash;
-use lib::blob_stor::dir::Dir;
-use lib::blob_stor::driver::DriverUninit;
 
 pub struct BlobStor {
     root: Dir,
@@ -26,15 +29,32 @@ impl BlobStor {
         }
     }
 
-    pub fn get(&self, hash_slice: &[u8]) -> Option<Vec<u8>> {
+    pub fn get_str(&self, hash_str: &str) -> Option<Vec<u8>> {
         
+        let hash_slice = hash_str.as_bytes();
         let hash = Hash::from_bytes(hash_slice);
         self.root.get(&hash)
     }
     
-    pub fn set(&self, hash_slice: &[u8], content: &[u8]) {
+    //pub fn get(&self, hash: &Hash) -> Option<Vec<u8>> {
+  
+/*
+    pub fn set_str(&self, content: &str) -> Hash {
+        //TODO
+    }
+*/
+    pub fn set(&self, content: &[u8]) -> Hash {
+                
+        let mut hasher = Sha1::new();
         
-        let hash = Hash::from_bytes(hash_slice);
-        self.root.set(&hash, content)
+        //hasher.input_str(content);
+        hasher.input(content);
+        
+        let hex = hasher.result_str();
+        
+        let hash = Hash::from_bytes(hex.as_bytes());
+        self.root.set(&hash, content);
+        
+        hash
     }
 }

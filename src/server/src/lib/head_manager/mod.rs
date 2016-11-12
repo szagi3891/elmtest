@@ -24,11 +24,13 @@ impl HeadManager {
         let path_blob = make_path(&base_path, "blob");              //katalog na bloby
         let path_head = make_path(&base_path, "head");              //katalog z aktualnymi head-ami
         
-        let last_head = read_last(&path_head);
+        let stor = BlobStor::new(path_blob, max_file);
+
+        let last_head = read_last(&path_head, &stor);
 
 		HeadManager {
 			inner: Arc::new(RwLock::new(last_head)),
-			stor: BlobStor::new(path_blob, max_file),
+			stor: stor,
             path_head: path_head,
 		}
 	}
@@ -61,18 +63,17 @@ impl HeadManager {
         
         let empty_dir = Dir::test_new_empty();
         
-        let mut serialized: Vec<u8> = Vec::new();
-
-        empty_dir.serialize(&mut serialized);
+        let serialized = empty_dir.serialize();
         
-        self.stor.set("0011223344556677889900112233445566778899".as_bytes(), &serialized);
+        //"0011223344556677889900112233445566778899".as_bytes(), 
+        let hash = self.stor.set(&serialized);
 
         println!("zserializowany obiekt {:?}", serialized);
     }
     
     fn test_read(&self) {
 
-        match self.stor.get("0011223344556677889900112233445566778899".as_bytes()) {
+        match self.stor.get_str("0011223344556677889900112233445566778899") {
             Some(dane) => {
                 println!("odczytany obiekt {:?}", dane);
                 let dir = Dir::deserialize(dane.as_slice());
@@ -82,6 +83,44 @@ impl HeadManager {
             }
         }
     }
+}
+    
+
+fn read_last(path_head: &PathBuf, stor: &BlobStor) -> Head {
+
+    let list = list_file(path_head);
+
+    println!("{:?}", list);
+
+    if list.len() > 0 {
+        panic!("TODO - trzeba odczytać heada z dysku");
+    }
+
+    /*
+        czytaj namiar na ostatniego head-a
+
+            jeśli go nie ma, to zainicjuj nowego pustego heada
+
+        jeśli jest
+            przeczytaj heada oraz numer wersji
+    */
+    //TODO - trzeba zainicjować początkową strukturę
+
+    /*
+        wszystkie pliki będą miały numer wersji oraz datę ładnie sformatowaną
+        będzie łatwiej posortować
+    */
+
+    let empty_dir = Dir::new_empty();
+    let empty_serialized = empty_dir.serialize();
+    let empty_hash = stor.set(empty_serialized.as_slice());
+
+    
+    let hash_str = [48; 40];        //40 x '0'
+
+    let hash = Hash::new(hash_str);
+
+    Head::new(hash, 0)
 }
 
 
@@ -107,34 +146,3 @@ fn make_path(base_path: &PathBuf, sub_dir: &str) -> PathBuf {
 }
 
 
-
-//TODO - przenieść tą funkcję, jako funkcję statyczną struktury Head
-
-pub fn read_last(path_head: &PathBuf) -> Head {
-
-    let list = list_file(path_head);
-    
-    println!("{:?}", list);
-    
-    /*
-        czytaj namiar na ostatniego head-a
-
-            jeśli go nie ma, to zainicjuj nowego pustego heada
-
-        jeśli jest
-            przeczytaj heada oraz numer wersji
-    */
-    //TODO - trzeba zainicjować początkową strukturę
-
-    /*
-        wszystkie pliki będą miały numer wersji oraz datę ładnie sformatowaną
-        będzie łatwiej posortować
-    */
-
-    let hash_str = [48; 40];        //40 x '0'
-    let version_start = 0;
-
-    let hash = Hash::new(hash_str);
-
-    Head::new(hash, version_start)
-}
