@@ -6,7 +6,7 @@ use lib::blob_stor::hash::Hash;
 use lib::blob_stor::driver::init_dir::{init_dir, DriverInitDirResult};
 use lib::blob_stor::driver::set_file::set_file;
 use lib::blob_stor::driver::get_file::get_file;
-use lib::list_file::list_file;
+use lib::fs::list_file::list_file;
 use lib::blob_stor::hex::to_hex;
 
 mod init_dir;

@@ -3,11 +3,12 @@ use std::sync::Arc;
 use std::path::PathBuf;
 use std::fs;
 use std::io::ErrorKind;
-use time::get_time;
+use chrono::offset::utc::UTC;
 
 use lib::blob_stor::BlobStor;
 use lib::blob_stor::hash::Hash;
-use lib::list_file::list_file;
+use lib::fs::list_file::list_file;
+use lib::fs::save_file::save_file;
 use lib::head_manager::structs::head::Head;
 use lib::head_manager::structs::dir::Dir;
 
@@ -101,16 +102,8 @@ fn read_last(path_head: &PathBuf, stor: &BlobStor) -> Head {
     }
 
     /*
-        czytaj namiar na ostatniego head-a
-
-            jeśli go nie ma, to zainicjuj nowego pustego heada
-
         jeśli jest
             przeczytaj heada oraz numer wersji
-    */
-    //TODO - trzeba zainicjować początkową strukturę
-
-    /*
         wszystkie pliki będą miały numer wersji oraz datę ładnie sformatowaną
         będzie łatwiej posortować
     */
@@ -125,9 +118,13 @@ fn read_last(path_head: &PathBuf, stor: &BlobStor) -> Head {
     let head_serialize = head.serialize();
     let head_hash = stor.set(head_serialize.as_slice());
     
-    //TODO - trzeba zapisać tego hasha head -> head_hash
+    let current = UTC::now().format("%Y-%m-%d_%H-%M-%S");
+    let file_name = format!("{}__{}", start_version, current);
     
-    get_time();
+    let mut path_save = path_head.clone();
+    path_save.push(file_name);
+    
+    save_file(path_save.as_path(), &head_serialize).unwrap();
     
     head
 }
