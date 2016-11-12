@@ -3,6 +3,7 @@ use std::sync::Arc;
 use std::path::PathBuf;
 use std::fs;
 use std::io::ErrorKind;
+use time::get_time;
 
 use lib::blob_stor::BlobStor;
 use lib::blob_stor::hash::Hash;
@@ -52,6 +53,7 @@ impl HeadManager {
     */
     
     
+    /*
         //TODO - tymczasowa funkcja potrzebna do testów na tej strukturze
     pub fn test(&self) {
         let hash = self.test_write();
@@ -84,6 +86,7 @@ impl HeadManager {
             }
         }
     }
+    */
 }
     
 
@@ -116,12 +119,17 @@ fn read_last(path_head: &PathBuf, stor: &BlobStor) -> Head {
     let empty_serialized = empty_dir.serialize();
     let empty_hash = stor.set(empty_serialized.as_slice());
 
+    let start_version = 0;
     
-    let hash_str = [48; 40];        //40 x '0'
-
-    let hash = Hash::new(hash_str);
-
-    Head::new(hash, 0)
+    let head = Head::new(empty_hash, start_version);
+    let head_serialize = head.serialize();
+    let head_hash = stor.set(head_serialize.as_slice());
+    
+    //TODO - trzeba zapisać tego hasha head -> head_hash
+    
+    get_time();
+    
+    head
 }
 
 
