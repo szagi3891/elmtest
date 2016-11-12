@@ -1,3 +1,5 @@
+set -e
+
 cd src/front
 
 elm-make ./src/test/Test.elm --output ./build/test.elm.js
