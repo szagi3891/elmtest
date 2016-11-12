@@ -95,22 +95,25 @@ fn read_last(path_head: &PathBuf, stor: &BlobStor) -> Head {
     let list = list_file(path_head);
 
     if list.len() > 0 {
-        println!("{:?}", list);
+        
+        let the_last_path = find_the_latest(list);
+
+        println!(" znaleziony najstarszy {:?}", the_last_path);
         panic!("TODO - trzeba odczytać heada z dysku");
     }
 
-    /*
-        jeśli jest
-            przeczytaj heada oraz numer wersji
-        wszystkie pliki będą miały numer wersji oraz datę ładnie sformatowaną
-        będzie łatwiej posortować
-    */
-
+                                            //TODO
+                                            /*
+                                                new_empty będzie przyjmował jako parametr stora
+                                                rederencję do stora będzie posiadała każda struktura
+                                                new_epty zwraca nową strukturę, która jest domyślnie zapisana na dysku
+                                                get_hash() -> Hash - tak będzie można pobrać hasha tego elementu
+                                            */
     let empty_dir = Dir::new_empty();
     let empty_serialized = empty_dir.serialize();
     let empty_hash = stor.set(empty_serialized.as_slice());
 
-    let start_version = 0;
+    let start_version = 1;
     
     let head = Head::new(empty_hash, start_version);
     let head_serialize = head.serialize();
@@ -127,6 +130,46 @@ fn read_last(path_head: &PathBuf, stor: &BlobStor) -> Head {
     head
 }
 
+
+fn find_the_latest(list: Vec<PathBuf>) -> PathBuf {
+
+    let mut out: Option<(u32, PathBuf)> = None;
+    
+    for path_item in list {
+
+        let path_item_clone = path_item.clone();
+        let file_name = path_item_clone.file_name().unwrap().to_str().unwrap();
+
+        let mut chunks = file_name.split("__");
+
+        let prefix1 = chunks.next();
+        let prefix2 = chunks.next();
+        let end = chunks.next();
+
+        match (prefix1, prefix2, end) {
+            (Some(prefix), Some(_), None) => {
+
+                let prefix_value = u32::from_str_radix(prefix, 10).unwrap();
+
+                let need_replace = match out {
+                    None => true,
+                    Some((max, _)) => max < prefix_value,
+                };
+
+                if need_replace {
+                    out = Some((prefix_value, path_item));
+                }
+            },
+            _ => {
+                panic!("nazwa pliku nie pasuje do wzorca: {:?}", file_name);
+            },
+        };
+    }
+    
+    match out.unwrap() {
+        (_, mut path) => path,
+    }
+}
 
 fn make_path(base_path: &PathBuf, sub_dir: &str) -> PathBuf {
     let mut path = base_path.clone();
