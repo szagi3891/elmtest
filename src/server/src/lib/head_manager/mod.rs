@@ -6,7 +6,6 @@ use std::io::ErrorKind;
 use chrono::offset::utc::UTC;
 
 use lib::blob_stor::BlobStor;
-use lib::blob_stor::hash::Hash;
 use lib::fs::list_file::list_file;
 use lib::fs::save_file::save_file;
 use lib::head_manager::structs::head::Head;
@@ -95,9 +94,8 @@ fn read_last(path_head: &PathBuf, stor: &BlobStor) -> Head {
 
     let list = list_file(path_head);
 
-    println!("{:?}", list);
-
     if list.len() > 0 {
+        println!("{:?}", list);
         panic!("TODO - trzeba odczytać heada z dysku");
     }
 
@@ -123,8 +121,8 @@ fn read_last(path_head: &PathBuf, stor: &BlobStor) -> Head {
     
     let mut path_save = path_head.clone();
     path_save.push(file_name);
-    
-    save_file(path_save.as_path(), &head_serialize).unwrap();
+    //as
+    save_file(path_save.as_path(), head_hash.to_string().as_bytes()).unwrap();
     
     head
 }

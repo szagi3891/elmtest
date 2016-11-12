@@ -18,7 +18,7 @@ pub struct Respose  {
 
 pub fn serve<'a>(out_response: OutResponse, mut router: Router<'a>) {
 
-    if (router.eq("get")) {
+    if router.eq("get") {
 
         let resp = Respose {
             status: "ok".to_string(),

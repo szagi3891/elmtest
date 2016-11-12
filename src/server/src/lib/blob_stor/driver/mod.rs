@@ -106,7 +106,7 @@ impl DriverFiles {
     
     //TODO - wynieść tą metodę do osobnego pliku
 
-    pub fn transformToDir(&self) -> (DriverDir, HashMap<u8, (DriverFiles, u32)>) {
+    pub fn transform_to_dir(&self) -> (DriverDir, HashMap<u8, (DriverFiles, u32)>) {
         
         let list = list_file(self.path.as_path());
         

@@ -1,5 +1,3 @@
-use std::path::PathBuf;
-
 use lib::blob_stor::hash::Hash;
 
 pub struct Head {

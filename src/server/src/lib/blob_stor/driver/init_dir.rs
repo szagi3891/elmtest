@@ -19,11 +19,11 @@ pub fn init_dir(path: &Path) -> DriverInitDirResult {
         let item = path.unwrap();
         let metadata = item.metadata().unwrap();
 
-        if (metadata.is_file()) {
+        if metadata.is_file() {
 
             files_count += 1;
 
-        } else if (metadata.is_dir()) {
+        } else if metadata.is_dir() {
 
             let file_name = item.file_name();
             let file_str = file_name.to_str().unwrap();

@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::io;
 
 use lib::blob_stor::hash::Hash;
 
@@ -124,7 +123,7 @@ impl Dir {
 
 fn read_line(data_in: &[u8]) -> Option<(&[u8], &[u8])> {
     
-    if (data_in.len() == 0) {
+    if data_in.len() == 0 {
         return None;
     }
 

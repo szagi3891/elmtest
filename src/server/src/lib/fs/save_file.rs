@@ -6,7 +6,7 @@ use std::io::Result;
 pub fn save_file(path: &Path, content: &[u8]) -> Result<()> {
                     //https://doc.rust-lang.org/std/fs/struct.OpenOptions.html#method.create_new
 
-    let mut file_opt = OpenOptions::new()
+    let file_opt = OpenOptions::new()
         .write(true)
         .create_new(true)
         .open(&path);

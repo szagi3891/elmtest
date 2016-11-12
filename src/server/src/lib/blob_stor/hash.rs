@@ -19,7 +19,7 @@ impl Hash {
     
     pub fn from_bytes(hash: &[u8]) -> Hash {
         
-        if (hash.len() != 40) {
+        if hash.len() != 40 {
             panic!("nieprawidłowa długość {:?}", hash.len());
         }
         
@@ -31,7 +31,6 @@ impl Hash {
     pub fn add_to_path(&self, path: &mut PathBuf) {
         
         let slice = &self.hash[..];
-        let lengg = slice.len();
                                                 //TODO - użyć lepszej metody do konwersji na hex
         let out = to_hex(slice);
         

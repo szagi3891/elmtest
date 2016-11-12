@@ -7,7 +7,7 @@ pub fn get_file(path: &Path) -> Option<Vec<u8>> {
         
     let mut buf = Vec::new();
 
-    let mut file_opt = OpenOptions::new().read(true).open(&path);
+    let file_opt = OpenOptions::new().read(true).open(&path);
 
     match file_opt {
         Ok(mut file) => {

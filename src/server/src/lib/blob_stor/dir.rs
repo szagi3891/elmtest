@@ -50,11 +50,11 @@ impl Dir {
         loop {
             count_loop += 1;
 
-            if (count_loop > 20) {
+            if count_loop > 20 {
                 panic!("too much recursion");
             }
             
-            match (self.get_exec(&hash)) {
+            match self.get_exec(&hash) {
                 DirGetCommand::NeedInit => {
                     self.initialize();
                 },
@@ -73,11 +73,11 @@ impl Dir {
         loop {
             count_loop += 1;
 
-            if (count_loop > 20) {
+            if count_loop > 20 {
                 panic!("too much recursion");
             }
             
-            match (self.set_exec(&hash, content)) {
+            match self.set_exec(&hash, content) {
                 DirSetCommand::NeedInit => {
                     self.initialize();
                 },
@@ -87,11 +87,11 @@ impl Dir {
                 },
 
                 DirSetCommand::NeedRebuildToSubDir => {
-                    self.transformToDirDriver();
+                    self.transform_to_dir_driver();
                 },
                 
                 DirSetCommand::NeedSubDir(prefix) => {
-                    self.createSubDir(prefix);
+                    self.create_sub_dir(prefix);
                 }
             }
         }
@@ -127,7 +127,7 @@ impl Dir {
 
     fn set_exec(&self, hash: &Hash, content: &[u8]) -> DirSetCommand {
         
-        let mut guard = self.inner.read().unwrap();
+        let guard = self.inner.read().unwrap();
 
         match *guard {
 
@@ -206,21 +206,21 @@ impl Dir {
         };
         
         match new_content_opt {
-            Some(mut new_content) => {
+            Some(new_content) => {
                 replace(&mut *guard, new_content);
             },
             None => {},
         };
     }
     
-    fn transformToDirDriver(&self) {
+    fn transform_to_dir_driver(&self) {
         let mut guard = self.inner.write().unwrap();
         
         let new_content_opt = match *guard {
             DirMode::ContentFiles(ref file_driver, _) => {
                 
                                                         //TODO - Trzeba usprawnić tą funkcję, żeby od razy właściwa mapa była zwaracana
-                let (dir_driver, mut map) = file_driver.transformToDir();
+                let (dir_driver, mut map) = file_driver.transform_to_dir();
                 
                 let mut map_dir = HashMap::new();
                 
@@ -237,14 +237,14 @@ impl Dir {
         };
         
         match new_content_opt {
-            Some(mut new_content) => {
+            Some(new_content) => {
                 replace(&mut *guard, new_content);
             },
             None => {},
         };
     }
 
-    fn createSubDir(&self, prefix: u8) {
+    fn create_sub_dir(&self, prefix: u8) {
         let mut guard = self.inner.write().unwrap();
         
         let new_content_opt = match *guard {
@@ -269,7 +269,7 @@ impl Dir {
         };
         
         match new_content_opt {
-            Some(mut new_content) => {
+            Some(new_content) => {
                 replace(&mut *guard, new_content);
             },
             None => {},

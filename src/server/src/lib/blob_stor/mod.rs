@@ -1,4 +1,3 @@
-use std::fs::create_dir;
 use std::path::PathBuf;
 use crypto::digest::Digest;
 use crypto::sha1::Sha1;
