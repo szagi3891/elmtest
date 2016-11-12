@@ -108,7 +108,7 @@ impl Dir {
                 let reader_lock = file_counter.get_reader_lock();
                 let content = file_driver.get(hash);
                 reader_lock.free();
-                DirGetCommand::Success(Some(content))
+                DirGetCommand::Success(content)
             }
             
             DirMode::ContentDir(ref dir_driver, ref map) => {

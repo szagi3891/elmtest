@@ -96,7 +96,7 @@ impl DriverFiles {
         set_file(path.as_path(), content)
     }
     
-    pub fn get(&self, hash: &Hash) -> Vec<u8> {
+    pub fn get(&self, hash: &Hash) -> Option<Vec<u8>> {
         
         let mut path = self.path.clone();
         hash.add_to_path(&mut path);

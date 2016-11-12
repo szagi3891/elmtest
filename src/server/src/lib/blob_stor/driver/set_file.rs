@@ -38,19 +38,16 @@ pub fn set_file(path: &Path, content: &[u8]) -> bool {
 
 fn verify(path: &Path, content: &[u8]) -> bool {
 
-    println!("GET {:?}", path);
-    
-    let buf = get_file(path);
-/*
-    println!("-------------");
-    println!("1 -> {:?}", buf.as_slice());
-    print_slice(buf.as_slice());
-    println!("-------------");
-    println!("2 -> {:?}", content);
-    print_slice(content);
-    println!("-------------");
-*/
-    return buf.as_slice() == content;
+    match get_file(path) {
+        
+        Some(buf) => {
+            return buf.as_slice() == content;
+        },
+        
+        None => {
+            panic!("Nigdy program nie powinien wejść w to odgałęzienie");
+        },
+    }
 }
 
 /*

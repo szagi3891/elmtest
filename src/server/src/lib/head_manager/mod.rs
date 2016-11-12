@@ -54,26 +54,27 @@ impl HeadManager {
     
         //TODO - tymczasowa funkcja potrzebna do testów na tej strukturze
     pub fn test(&self) {
-        self.test_write();
-        self.test_read();
+        let hash = self.test_write();
+        self.test_read(&hash);
     }
 
-    fn test_write(&self) {
+    fn test_write(&self) -> Hash {
         println!("testuję coś se tam");
         
         let empty_dir = Dir::test_new_empty();
         
         let serialized = empty_dir.serialize();
         
-        //"0011223344556677889900112233445566778899".as_bytes(), 
         let hash = self.stor.set(&serialized);
 
         println!("zserializowany obiekt {:?}", serialized);
+        
+        hash
     }
     
-    fn test_read(&self) {
+    fn test_read(&self, hash: &Hash) {
 
-        match self.stor.get_str("0011223344556677889900112233445566778899") {
+        match self.stor.get(hash) {
             Some(dane) => {
                 println!("odczytany obiekt {:?}", dane);
                 let dir = Dir::deserialize(dane.as_slice());

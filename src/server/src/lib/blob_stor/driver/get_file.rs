@@ -1,8 +1,9 @@
 use std::path::Path;
 use std::fs::OpenOptions;
 use std::io::Read;
+use std::io::ErrorKind;
 
-pub fn get_file(path: &Path) -> Vec<u8> {
+pub fn get_file(path: &Path) -> Option<Vec<u8>> {
         
     let mut buf = Vec::new();
 
@@ -14,7 +15,7 @@ pub fn get_file(path: &Path) -> Vec<u8> {
             match file.read_to_end(&mut buf) {
 
                 Ok(_) => {
-                    return buf;
+                    return Some(buf);
                 },
 
                 Err(err) => {
@@ -24,7 +25,17 @@ pub fn get_file(path: &Path) -> Vec<u8> {
         },
 
         Err(err) => {
-            panic!("error in read {:?}", err)
+            
+            match err.kind() {
+                
+                ErrorKind::NotFound => {
+                    return None;
+                }
+                
+                _ => {
+                    panic!("error in read {:?}", err)
+                }
+            }
         }
     }
 }

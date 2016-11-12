@@ -36,7 +36,9 @@ impl BlobStor {
         self.root.get(&hash)
     }
     
-    //pub fn get(&self, hash: &Hash) -> Option<Vec<u8>> {
+    pub fn get(&self, hash: &Hash) -> Option<Vec<u8>> {
+        self.root.get(&hash)
+    }
   
 /*
     pub fn set_str(&self, content: &str) -> Hash {
