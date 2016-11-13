@@ -4,6 +4,7 @@ use std::path::PathBuf;
 use std::fs;
 use std::io::ErrorKind;
 use chrono::offset::utc::UTC;
+use std::collections::HashSet;
 
 use lib::blob_stor::BlobStor;
 use lib::blob_stor::hash::Hash;
@@ -129,6 +130,7 @@ fn read_last(path_head: &PathBuf, stor: &BlobStor) -> Head {
 fn find_the_latest(list: Vec<PathBuf>) -> (u32, PathBuf) {
 
     let mut out: Option<(u32, PathBuf)> = None;
+    let mut already_occurred: HashSet<u32> = HashSet::new();
     
     for path_item in list {
 
@@ -146,6 +148,10 @@ fn find_the_latest(list: Vec<PathBuf>) -> (u32, PathBuf) {
 
                 let prefix_value = u32::from_str_radix(prefix, 10).unwrap();
 
+                if already_occurred.insert(prefix_value) == false {
+                    panic!("zduplikowany numer wersji: {:?}", prefix_value);
+                }
+                
                 let need_replace = match out {
                     None => true,
                     Some((max, _)) => max < prefix_value,
