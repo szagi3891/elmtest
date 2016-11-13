@@ -25,15 +25,14 @@ impl Dir {
     
     pub fn new_empty(stor: &BlobStor) -> Dir {
 
-        //let empty_serialized = empty_dir.serialize();
-        //empty_serialized.as_slice()
-
-        let empty_hash = stor.set("".as_bytes());
+        let empty_list = HashMap::new();
+        let empty_serialized = serialize(&empty_list);
+        let empty_hash = stor.set(empty_serialized.as_slice());
         
         Dir {
             stor: stor.clone(),
             hash: empty_hash,
-            list: HashMap::new()
+            list: empty_list,
         }
     }
     
@@ -42,43 +41,7 @@ impl Dir {
     }
     
     pub fn serialize(&self) -> Vec<u8> {
-
-        let mut sort_keys = Vec::new();
-        
-        for (key, _) in self.list.iter() {
-            sort_keys.push(key);
-        }
-        
-        sort_keys.sort();
-
-        let mut out: Vec<u8> = Vec::new();
-
-        for key_name in sort_keys {
-            
-            let val = self.list.get(key_name).unwrap();
-
-            val.hash.serialize(&mut out);
-            out.push(32);
-            
-            match val.kind {
-                KindType::File => {
-                    out.push(48);
-                },
-                KindType::Dir => {
-                    out.push(49);
-                },
-            }
-
-            out.push(32);
-            
-            for item in key_name.as_bytes() {
-                out.push(*item);
-            }
-
-            out.push(10);
-        }
-
-        out
+        serialize(&self.list)
     }
     
     pub fn deserialize(hash_addr: Hash, stor: BlobStor, data_in: &[u8]) -> Dir {
@@ -157,4 +120,44 @@ fn create_item(line: &[u8]) -> (String, DirItem) {
         kind: kind,
         hash: hash,
     })
+}
+
+fn serialize(list: &HashMap<String, DirItem>) -> Vec<u8> {
+
+    let mut sort_keys = Vec::new();
+
+    for (key, _) in list.iter() {
+        sort_keys.push(key);
+    }
+
+    sort_keys.sort();
+
+    let mut out: Vec<u8> = Vec::new();
+
+    for key_name in sort_keys {
+
+        let val = list.get(key_name).unwrap();
+
+        val.hash.serialize(&mut out);
+        out.push(32);
+
+        match val.kind {
+            KindType::File => {
+                out.push(48);
+            },
+            KindType::Dir => {
+                out.push(49);
+            },
+        }
+
+        out.push(32);
+
+        for item in key_name.as_bytes() {
+            out.push(*item);
+        }
+
+        out.push(10);
+    }
+
+    out
 }
