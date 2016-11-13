@@ -100,10 +100,12 @@ fn read_last(path_head: &PathBuf, stor: &BlobStor) -> Head {
         
         let (version, the_last_path) = find_the_latest(list);
 
-        let head_data = get_file(the_last_path.as_path()).unwrap();
-        let hash = Hash::from_vec(&head_data);
+        let last_data = get_file(the_last_path.as_path()).unwrap();
+        let head_hash = Hash::from_vec(&last_data);
 
-        return Head::new_from_disk(stor, version, hash);
+        let head_data = stor.get(&head_hash).unwrap();
+        
+        return Head::deserialize(stor, head_data.as_slice());
     }
 
     let empty_dir = Dir::new_empty(stor);

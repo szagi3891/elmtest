@@ -3,7 +3,9 @@ use lib::blob_stor::hash::Hash;
 
 pub struct Head {
     stor: BlobStor,
-    version: u32,
+    version: u32,                                   //TODO - do zastanowienia w którym miejscy powinna być przechowywana wersja head-a
+                                                    //możliwe że ta informacja przy serializacji nie powinna być zapisywana
+                                                    //i tylko z nazwy pliku czerpana być powinna
     root: Hash,
     //prev: Option<Head>            //TODO
     //metadata
@@ -11,14 +13,6 @@ pub struct Head {
 }
 
 impl Head {
-    
-    pub fn new_from_disk(stor: &BlobStor, version: u32, root: Hash) -> Head {
-        Head {
-            stor: stor.clone(),
-            root: root,
-            version: version,
-        }
-    }
     
     pub fn new(stor: &BlobStor, version: u32, root: Hash) -> Head {
         
@@ -39,13 +33,39 @@ impl Head {
     pub fn serialize(&self) -> Vec<u8> {
         serialize(self.version, &self.root)
     }
+    
+    pub fn deserialize(stor: &BlobStor, data_in: &[u8]) -> Head {
+        
+        let mut iter = data_in.split(|char| *char == 10);
+        
+        let line_version = iter.next();
+        let line_head = iter.next();
+        let rest1 = iter.next();
+        let rest2 = iter.next();
+        
+        match (line_version, line_head, rest1.unwrap().len(), rest2) {
+            (Some(version), Some(head), 0, None) => {
+                
+                let mut version_vec = Vec::new();
+                version_vec.extend_from_slice(version);
 
-    /*
-    pub fn deserialize(data_in: &[u8]) -> Dir {
-        //TODO
+                let version_str = String::from_utf8(version_vec).unwrap();
+                
+                let version_number = u32::from_str_radix(version_str.as_str(), 10).unwrap();
+
+                Head {
+                    stor: stor.clone(),
+                    root: Hash::from_bytes(head),
+                    version: version_number,
+                }
+            },
+            _ => {
+                panic!("problemy w deserializacji head-a");
+            }
+        }
     }
-    */
 }
+
 
 fn serialize(version: u32, root: &Hash) -> Vec<u8> {
         
