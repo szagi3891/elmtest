@@ -13,7 +13,7 @@ impl Hash {
     pub fn new(hash: [u8; 40]) -> Hash {
         
         Hash {
-            hash: convertToHex(&hash[..])
+            hash: convert_to_hex(&hash[..])
         }
     }
     
@@ -24,7 +24,7 @@ impl Hash {
         }
         
         Hash {
-            hash: convertToHex(hash)
+            hash: convert_to_hex(hash)
         }
     }
     
@@ -64,7 +64,7 @@ impl Hash {
     }
 }
 
-fn convertToHex(hash: &[u8]) -> [u8; 20] {
+fn convert_to_hex(hash: &[u8]) -> [u8; 20] {
     
     let mut out = [0; 20];
     
@@ -72,13 +72,13 @@ fn convertToHex(hash: &[u8]) -> [u8; 20] {
         let (_, tail) = hash.split_at(2 * index);
         let (range, _) = tail.split_at(2);
         
-        out[index] = fromHex(range);
+        out[index] = from_hex(range);
     }
     
     out
 }
 
-fn fromHex(slice: &[u8]) -> u8 {
+fn from_hex(slice: &[u8]) -> u8 {
     
     let slice_str = str::from_utf8(&slice).unwrap();
     u8::from_str_radix(slice_str, 16).unwrap()

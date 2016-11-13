@@ -38,7 +38,7 @@ impl HeadManager {
             path_head: path_head,
 		}
 	}
-    
+
     /*
     HeadManagerError
         wszystkie błędy użytkownika, które potem raportujemy jako odpowiedź
@@ -99,7 +99,7 @@ fn read_last(path_head: &PathBuf, stor: &BlobStor) -> Head {
 
     if list.len() > 0 {
         
-        let (version, the_last_path) = find_the_latest(list);
+        let (_, the_last_path) = find_the_latest(list);
 
         let last_data = get_file(the_last_path.as_path()).unwrap();
         let head_hash = Hash::from_vec(&last_data);
