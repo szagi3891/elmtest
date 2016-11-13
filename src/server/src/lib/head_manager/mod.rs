@@ -103,33 +103,22 @@ fn read_last(path_head: &PathBuf, stor: &BlobStor) -> Head {
         let head_data = get_file(the_last_path.as_path()).unwrap();
         let hash = Hash::from_vec(&head_data);
 
-        return Head::new(hash, version);
+        return Head::new_from_disk(stor, version, hash);
     }
 
-                                            //TODO
-                                            /*
-                                                new_empty będzie przyjmował jako parametr stora
-                                                rederencję do stora będzie posiadała każda struktura
-                                                new_epty zwraca nową strukturę, która jest domyślnie zapisana na dysku
-                                                get_hash() -> Hash - tak będzie można pobrać hasha tego elementu
-                                            */
-    let empty_dir = Dir::new_empty();
-    let empty_serialized = empty_dir.serialize();
-    let empty_hash = stor.set(empty_serialized.as_slice());
+    let empty_dir = Dir::new_empty(stor);
 
     let start_version = 1;
     
-    let head = Head::new(empty_hash, start_version);
-    let head_serialize = head.serialize();
-    let head_hash = stor.set(head_serialize.as_slice());
+    let head = Head::new(stor, start_version, empty_dir.hash());
     
     let current = UTC::now().format("%Y-%m-%d_%H-%M-%S");
     let file_name = format!("{}__{}", start_version, current);
     
     let mut path_save = path_head.clone();
     path_save.push(file_name);
-    //as
-    save_file(path_save.as_path(), head_hash.to_string().as_bytes()).unwrap();
+
+    save_file(path_save.as_path(), head.get_hash().to_string().as_bytes()).unwrap();
     
     head
 }

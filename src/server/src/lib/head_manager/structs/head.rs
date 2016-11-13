@@ -1,6 +1,8 @@
+use lib::blob_stor::BlobStor;
 use lib::blob_stor::hash::Hash;
 
 pub struct Head {
+    stor: BlobStor,
     version: u32,
     root: Hash,
     //prev: Option<Head>            //TODO
@@ -9,35 +11,57 @@ pub struct Head {
 }
 
 impl Head {
-    pub fn new(root: Hash, version: u32) -> Head {
+    
+    pub fn new_from_disk(stor: &BlobStor, version: u32, root: Hash) -> Head {
         Head {
+            stor: stor.clone(),
             root: root,
             version: version,
         }
     }
     
-    pub fn serialize(&self) -> Vec<u8> {
-        let mut out = Vec::new();
+    pub fn new(stor: &BlobStor, version: u32, root: Hash) -> Head {
         
-                                                        //pierwsza linia - version
-        let version_str = self.version.to_string();
-        
-        for item in version_str.as_bytes() {
-            out.push(*item);
-        }
+        let head_serialize = serialize(version, &root);
+        let head_hash = stor.set(head_serialize.as_slice());
 
-        out.push(10);
-        
-                                                        //druga linia - head
-        self.root.serialize(&mut out);
-        out.push(10);
-        
-        out
+        Head {
+            stor: stor.clone(),
+            root: root,
+            version: version,
+        }
     }
     
+    pub fn get_hash(&self) -> Hash {
+        self.root.clone()
+    }
+
+    pub fn serialize(&self) -> Vec<u8> {
+        serialize(self.version, &self.root)
+    }
+
     /*
     pub fn deserialize(data_in: &[u8]) -> Dir {
         //TODO
     }
     */
+}
+
+fn serialize(version: u32, root: &Hash) -> Vec<u8> {
+        
+    let mut out = Vec::new();
+                                                    //pierwsza linia - version
+    let version_str = version.to_string();
+
+    for item in version_str.as_bytes() {
+        out.push(*item);
+    }
+
+    out.push(10);
+
+                                                    //druga linia - head
+    root.serialize(&mut out);
+    out.push(10);
+
+    out
 }

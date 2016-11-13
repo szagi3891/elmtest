@@ -7,6 +7,7 @@ use lib::blob_stor::hash::Hash;
 use lib::blob_stor::driver::{DriverUninit, DriverInitResult, DriverFiles, DriverDir};
 use lib::blob_stor::file_counter::FileCounter;
 
+#[derive(Clone)]
 pub struct Dir {
     inner: Arc<RwLock<DirMode>>,
     max_file: u32,

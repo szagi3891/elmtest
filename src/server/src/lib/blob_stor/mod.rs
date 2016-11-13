@@ -13,6 +13,7 @@ mod driver;
 mod file_counter;
 mod hex;
 
+#[derive(Clone)]
 pub struct BlobStor {
     root: Dir,
 }

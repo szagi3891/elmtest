@@ -33,8 +33,6 @@ impl Hash {
         Hash::from_bytes(data_slice)
     }
 
-    //Hash::from_vec(head_data);
-    
     pub fn add_to_path(&self, path: &mut PathBuf) {
         
         let slice = &self.hash[..];
