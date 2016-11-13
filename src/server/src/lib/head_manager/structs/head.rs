@@ -2,6 +2,7 @@ use lib::blob_stor::BlobStor;
 use lib::blob_stor::hash::Hash;
 
 pub struct Head {
+    self_hash: Hash,
     stor: BlobStor,
     version: u32,                                   //TODO - do zastanowienia w którym miejscy powinna być przechowywana wersja head-a
                                                     //możliwe że ta informacja przy serializacji nie powinna być zapisywana
@@ -20,6 +21,7 @@ impl Head {
         let head_hash = stor.set(head_serialize.as_slice());
 
         Head {
+            self_hash: head_hash,
             stor: stor.clone(),
             root: root,
             version: version,
@@ -27,15 +29,19 @@ impl Head {
     }
     
     pub fn get_hash(&self) -> Hash {
-        self.root.clone()
+        self.self_hash.clone()
     }
 
     pub fn serialize(&self) -> Vec<u8> {
         serialize(self.version, &self.root)
     }
     
-    pub fn deserialize(stor: &BlobStor, data_in: &[u8]) -> Head {
+    pub fn deserialize(self_hash: Hash, stor: &BlobStor, data_in: &[u8]) -> Head {
         
+        if data_in.len() == 0 {
+            panic!("spodziewano się danych");
+        }
+
         let mut iter = data_in.split(|char| *char == 10);
         
         let line_version = iter.next();
@@ -54,6 +60,7 @@ impl Head {
                 let version_number = u32::from_str_radix(version_str.as_str(), 10).unwrap();
 
                 Head {
+                    self_hash: self_hash,
                     stor: stor.clone(),
                     root: Hash::from_bytes(head),
                     version: version_number,

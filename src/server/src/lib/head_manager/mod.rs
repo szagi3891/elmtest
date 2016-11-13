@@ -106,7 +106,7 @@ fn read_last(path_head: &PathBuf, stor: &BlobStor) -> Head {
 
         let head_data = stor.get(&head_hash).unwrap();
         
-        return Head::deserialize(stor, head_data.as_slice());
+        return Head::deserialize(head_hash, stor, head_data.as_slice());
     }
 
     let empty_dir = Dir::new_empty(stor);

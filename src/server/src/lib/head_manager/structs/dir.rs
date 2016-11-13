@@ -5,7 +5,7 @@ use lib::blob_stor::hash::Hash;
 
 pub struct Dir {
     stor: BlobStor,
-    hash: Hash,
+    self_hash: Hash,
     list: HashMap<String, DirItem>,
 }
 
@@ -31,13 +31,13 @@ impl Dir {
         
         Dir {
             stor: stor.clone(),
-            hash: empty_hash,
+            self_hash: empty_hash,
             list: empty_list,
         }
     }
     
     pub fn hash(&self) -> Hash {
-        self.hash.clone()
+        self.self_hash.clone()
     }
     
     pub fn serialize(&self) -> Vec<u8> {
@@ -67,7 +67,7 @@ impl Dir {
                 None => {
                     return Dir {
                         stor: stor,
-                        hash: hash_addr,
+                        self_hash: hash_addr,
                         list: map
                     };
                 }
