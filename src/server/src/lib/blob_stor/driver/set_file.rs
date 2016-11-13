@@ -3,7 +3,7 @@ use std::path::Path;
 //use std::io::Write;
 use std::io::ErrorKind;
 
-use lib::blob_stor::driver::get_file::get_file;
+use lib::fs::get_file::get_file;
 use lib::fs::save_file::save_file;
 
 pub fn set_file(path: &Path, content: &[u8]) -> bool {

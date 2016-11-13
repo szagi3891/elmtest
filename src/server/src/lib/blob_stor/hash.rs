@@ -28,6 +28,13 @@ impl Hash {
         }
     }
     
+    pub fn from_vec(data: &Vec<u8>) -> Hash {
+        let data_slice = data.as_slice();
+        Hash::from_bytes(data_slice)
+    }
+
+    //Hash::from_vec(head_data);
+    
     pub fn add_to_path(&self, path: &mut PathBuf) {
         
         let slice = &self.hash[..];

@@ -6,8 +6,10 @@ use std::io::ErrorKind;
 use chrono::offset::utc::UTC;
 
 use lib::blob_stor::BlobStor;
+use lib::blob_stor::hash::Hash;
 use lib::fs::list_file::list_file;
 use lib::fs::save_file::save_file;
+use lib::fs::get_file::get_file;
 use lib::head_manager::structs::head::Head;
 use lib::head_manager::structs::dir::Dir;
 
@@ -96,10 +98,12 @@ fn read_last(path_head: &PathBuf, stor: &BlobStor) -> Head {
 
     if list.len() > 0 {
         
-        let the_last_path = find_the_latest(list);
+        let (version, the_last_path) = find_the_latest(list);
 
-        println!(" znaleziony najstarszy {:?}", the_last_path);
-        panic!("TODO - trzeba odczytać heada z dysku");
+        let head_data = get_file(the_last_path.as_path()).unwrap();
+        let hash = Hash::from_vec(&head_data);
+
+        return Head::new(hash, version);
     }
 
                                             //TODO
@@ -131,13 +135,13 @@ fn read_last(path_head: &PathBuf, stor: &BlobStor) -> Head {
 }
 
 
-fn find_the_latest(list: Vec<PathBuf>) -> PathBuf {
+fn find_the_latest(list: Vec<PathBuf>) -> (u32, PathBuf) {
 
     let mut out: Option<(u32, PathBuf)> = None;
     
     for path_item in list {
 
-        let path_item_clone = path_item.clone();
+        let path_item_clone = path_item.clone();            //TODO - do usunięcia ten klon
         let file_name = path_item_clone.file_name().unwrap().to_str().unwrap();
 
         let mut chunks = file_name.split("__");
@@ -166,9 +170,7 @@ fn find_the_latest(list: Vec<PathBuf>) -> PathBuf {
         };
     }
     
-    match out.unwrap() {
-        (_, mut path) => path,
-    }
+    out.unwrap()
 }
 
 fn make_path(base_path: &PathBuf, sub_dir: &str) -> PathBuf {

@@ -5,13 +5,12 @@ use std::fs;
 use lib::blob_stor::hash::Hash;
 use lib::blob_stor::driver::init_dir::{init_dir, DriverInitDirResult};
 use lib::blob_stor::driver::set_file::set_file;
-use lib::blob_stor::driver::get_file::get_file;
+use lib::fs::get_file::get_file;
 use lib::fs::list_file::list_file;
 use lib::blob_stor::hex::to_hex;
 
 mod init_dir;
 mod set_file;
-mod get_file;
 
 pub struct DriverUninit {
     path: PathBuf,
