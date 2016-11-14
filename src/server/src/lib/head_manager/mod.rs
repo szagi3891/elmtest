@@ -12,7 +12,7 @@ use lib::fs::list_file::list_file;
 use lib::fs::save_file::save_file;
 use lib::fs::get_file::get_file;
 use lib::head_manager::structs::head::Head;
-use lib::head_manager::structs::dir::Dir;
+use lib::head_manager::structs::ionode::Ionode;
 
 mod structs;
 
@@ -48,48 +48,35 @@ impl HeadManager {
         //pobiera listę plików w żądanej ścieżce
     }
 */
-    /*
-        wczytaj obiekt head
-            przeczytaj namiar na root-a
-                wczytaj ten obiekt
-                    itdd, aż do otrzymania
-    */
     
     
-    /*
         //TODO - tymczasowa funkcja potrzebna do testów na tej strukturze
     pub fn test(&self) {
         let hash = self.test_write();
-        self.test_read(&hash);
+        self.test_read(hash);
     }
 
     fn test_write(&self) -> Hash {
         println!("testuję coś se tam");
         
-        let empty_dir = Dir::test_new_empty();
-        
-        let serialized = empty_dir.serialize();
-        
-        let hash = self.stor.set(&serialized);
+        let empty_dir = Ionode::new_empty_dir(&self.stor);
+        let hash = empty_dir.hash();
 
-        println!("zserializowany obiekt {:?}", serialized);
-        
         hash
     }
     
-    fn test_read(&self, hash: &Hash) {
+    fn test_read(&self, hash: Hash) {
 
-        match self.stor.get(hash) {
+        match self.stor.get(&hash) {
             Some(dane) => {
                 println!("odczytany obiekt {:?}", dane);
-                let dir = Dir::deserialize(dane.as_slice());
+                let dir = Ionode::deserialize(hash, &self.stor, dane.as_slice());
             },
             None => {
                 panic!("brak rekordu");
             }
         }
     }
-    */
 }
     
 
@@ -109,7 +96,7 @@ fn read_last(path_head: &PathBuf, stor: &BlobStor) -> Head {
         return Head::deserialize(head_hash, stor, head_data.as_slice());
     }
 
-    let empty_dir = Dir::new_empty(stor);
+    let empty_dir = Ionode::new_empty_dir(stor);
 
     let start_version = 1;
     
