@@ -59,6 +59,8 @@ impl Ionode {
             
         } else if header.len() == 1 && header[0] == 49 {    //plik
             
+            panic!("TODO");
+            
         } else {
             panic!("nieprawidłowe dane");
         }
