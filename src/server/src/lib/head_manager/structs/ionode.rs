@@ -27,11 +27,12 @@ pub struct Ionode {
 impl Ionode {
     pub fn new_empty_dir(stor: &BlobStor) -> Ionode {
 
-        let empty_list = HashMap::new();
-        let empty_serialized = serialize_dir(&empty_list);
+        let content = IonodeContent::Dir(HashMap::new());
+        
+        let empty_serialized = serialize(&content);
         let empty_hash = stor.set(empty_serialized.as_slice());
         
-        let content = IonodeContent::Dir(empty_list);
+        
         
         Ionode {
             stor: stor.clone(),
@@ -128,7 +129,30 @@ fn read_line(data_in: &[u8]) -> Option<(&[u8], &[u8])> {
     }
 }
 
-fn serialize_dir(list: &HashMap<String, Hash>) -> Vec<u8> {
+fn serialize(ionode_content: &IonodeContent) -> Vec<u8> {
+    
+    let mut out: Vec<u8> = Vec::new();
+    
+    match *ionode_content {
+        
+        IonodeContent::Dir(ref map) => {
+            
+            out.push(48);                               //informuje że to katalog
+            out.push(10);
+            
+            serialize_dir(map, &mut out);
+        },
+        
+        IonodeContent::File(ref type_node, ref hash) => {
+            panic!("TODO");
+            //TODO
+        }
+    };
+    
+    out
+}
+
+fn serialize_dir(list: &HashMap<String, Hash>, out: &mut Vec<u8>) {
 
     let mut sort_keys = Vec::new();
 
@@ -137,17 +161,12 @@ fn serialize_dir(list: &HashMap<String, Hash>) -> Vec<u8> {
     }
 
     sort_keys.sort();
-
-    let mut out: Vec<u8> = Vec::new();
-
-    out.push(48);                               //informuje że to katalog
-    out.push(10);
     
     for key_name in sort_keys {
 
         let val = list.get(key_name).unwrap();
 
-        val.serialize(&mut out);
+        val.serialize(out);
         out.push(32);
 
         for item in key_name.as_bytes() {
@@ -156,6 +175,4 @@ fn serialize_dir(list: &HashMap<String, Hash>) -> Vec<u8> {
 
         out.push(10);
     }
-
-    out
 }
