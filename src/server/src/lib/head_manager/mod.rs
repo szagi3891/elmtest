@@ -13,6 +13,7 @@ use lib::fs::save_file::save_file;
 use lib::fs::get_file::get_file;
 use lib::head_manager::structs::head::Head;
 use lib::head_manager::structs::ionode::Ionode;
+use lib::head_manager::structs::iopath::Iopath;
 
 mod structs;
 
@@ -61,6 +62,10 @@ impl HeadManager {
         
         let empty_dir = Ionode::new_empty_dir(&self.stor);
         let hash = empty_dir.hash();
+
+        let path = Iopath::new(vec!("testowy".to_string()));
+        let new_content = "content".as_bytes();
+        let new_item = empty_dir.new_file(path, new_content);
 
         hash
     }
@@ -112,7 +117,6 @@ fn read_last(path_head: &PathBuf, stor: &BlobStor) -> Head {
     
     head
 }
-
 
 fn find_the_latest(list: Vec<PathBuf>) -> (u32, PathBuf) {
 

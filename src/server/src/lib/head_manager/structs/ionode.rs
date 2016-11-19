@@ -2,6 +2,8 @@ use std::collections::HashMap;
 
 use lib::blob_stor::BlobStor;
 use lib::blob_stor::hash::Hash;
+use lib::head_manager::structs::ioerror::IonodeResult;
+use lib::head_manager::structs::iopath::Iopath;
 
 enum IonodeType {
     Txt,                //zwykły plik tekstowy
@@ -32,8 +34,6 @@ impl Ionode {
         let empty_serialized = serialize(&content);
         let empty_hash = stor.set(empty_serialized.as_slice());
         
-        
-        
         Ionode {
             stor: stor.clone(),
             self_hash: empty_hash,
@@ -59,14 +59,62 @@ impl Ionode {
             
         } else if header.len() == 1 && header[0] == 49 {    //plik
             
-            panic!("TODO");
+            unimplemented!();           //TODO
             
         } else {
             panic!("nieprawidłowe dane");
+        }   
+    }
+    
+    //metody operujące na tym nodzie
+    
+    pub fn new_file(&self, path: Iopath, data: &[u8]) -> IonodeResult<Ionode> {
+        
+        match self.content {
+            IonodeContent::Dir(ref map_dir) => {
+                
+                //map_dir - HashMap<String, Hash>
+                
+                match path.head() {
+
+                    Some((first_item, rest_path)) => {
+                        
+                        if rest_path.len() > 0 {
+                            
+                            unimplemented!();       //TODO
+                            /*
+                                jeśli więcej niż jeden element, to znajdź element który powinien być katalogiem, i na nim wykonaj rekurencyjne odwołanie do tej metody tylko że skrócone o ten jeden element tej ścieżki
+                            */
+
+
+                        } else {
+                            
+                            unimplemented!();
+                            //jeśli jeden element, to to możesz się zająć tworzeniem tego nowego pliku
+                            
+                            //upewnij się że nie ma wpisu o tym pliku w tym katalogu
+                            
+                                //self.stor.set();  //wrzuć do stora ten plik
+                                //map_dir.get(&rest_path)
+                                //zwróc nowy Ionode
+                        }
+                    },
+
+                    None => {
+                        panic!("próba uruchomianie tworzenia nowego pliku na pliku");
+                    }
+                }
+
+            },
+
+            IonodeContent::File(_, _) => {
+                unimplemented!();       //TODO - trzeba rzucić błędem że ten węzeł nie jest katalogiem
+            }
         }
         
-        println!("{:?}", header);
-        panic!("STop");     
+        //potrzebna będzie metoda, load from hash -> zwraca nowego ionode lub błąd
+        
+        unimplemented!();       //TODO
     }
 }
 
@@ -146,8 +194,7 @@ fn serialize(ionode_content: &IonodeContent) -> Vec<u8> {
         },
         
         IonodeContent::File(ref type_node, ref hash) => {
-            panic!("TODO");
-            //TODO
+            unimplemented!();                   //TODO
         }
     };
     
