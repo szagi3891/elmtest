@@ -13,30 +13,42 @@ mod driver;
 mod file_counter;
 mod hex;
 
+trait BlobStorTrait {
+    fn set(&self, &[u8]) -> Hash;
+    fn get(&self, &Hash) -> Option<Vec<u8>>;
+}
+
+pub type BlobStor = Box<BlobStorTrait + Send + Sync>;
+
+pub fn new_blob_stor(base_path: PathBuf, max_file: u32) -> BlobStor {
+    BlobStorDisk::new(base_path, max_file)
+}
+
+
 #[derive(Clone)]
-pub struct BlobStor {
+struct BlobStorDisk {
     root: Dir,
 }
 
-impl BlobStor {
+impl BlobStorDisk {
 
-    pub fn new<'a>(base_path: PathBuf, max_file: u32) -> BlobStor {
+    fn new(base_path: PathBuf, max_file: u32) -> Box<BlobStorDisk> {
 
         let driver = DriverUninit::new(base_path);
-        
-        BlobStor {
+
+        Box::new(BlobStorDisk {
             root : Dir::new_uninit(driver, max_file),
-        }
+        })
     }
 
-    pub fn get_str(&self, hash_str: &str) -> Option<Vec<u8>> {
+    fn get_str(&self, hash_str: &str) -> Option<Vec<u8>> {
         
         let hash_slice = hash_str.as_bytes();
         let hash = Hash::from_bytes(hash_slice);
         self.root.get(&hash)
     }
     
-    pub fn get(&self, hash: &Hash) -> Option<Vec<u8>> {
+    fn get(&self, hash: &Hash) -> Option<Vec<u8>> {
         self.root.get(&hash)
     }
   
@@ -45,7 +57,8 @@ impl BlobStor {
         //TODO
     }
 */
-    pub fn set(&self, content: &[u8]) -> Hash {
+
+    fn set(&self, content: &[u8]) -> Hash {
                 
         let mut hasher = Sha1::new();
         
@@ -58,5 +71,15 @@ impl BlobStor {
         self.root.set(&hash, content);
         
         hash
+    }
+}
+
+impl BlobStorTrait for BlobStorDisk {
+    fn get(&self, hash: &Hash) -> Option<Vec<u8>> {
+        self.get(hash)
+    }
+    
+    fn set(&self, content: &[u8]) -> Hash {
+        self.set(content)
     }
 }
