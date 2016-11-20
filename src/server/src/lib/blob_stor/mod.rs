@@ -18,6 +18,13 @@ pub struct BlobStor {
 }
 
 impl BlobStor {
+        
+    pub fn new_blob_stor(base_path: PathBuf, max_file: u32) -> BlobStor {
+        BlobStor {
+            inner: BlobStorDisk::new(base_path, max_file)
+        }
+    }
+    
     pub fn get(&self, hash: &Hash) -> Option<Vec<u8>> {
         self.get(hash)
     }
@@ -33,19 +40,6 @@ impl BlobStor {
     }
 }
 
-//pub type BlobStor = Box<BlobStorTrait + Send + Sync>;
-
-pub fn new_blob_stor(base_path: PathBuf, max_file: u32) -> BlobStor {
-    BlobStor {
-        inner: BlobStorDisk::new(base_path, max_file)
-    }
-}
-
-
-/*
-pub fn clone_stor(stor: &BlobStor) -> BlobStor {
-}
-*/
 
 impl BlobStorTrait for BlobStorDisk {
     fn get(&self, hash: &Hash) -> Option<Vec<u8>> {

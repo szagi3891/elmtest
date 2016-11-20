@@ -6,7 +6,7 @@ use std::io::ErrorKind;
 use chrono::offset::utc::UTC;
 use std::collections::HashSet;
 
-use lib::blob_stor::{BlobStor, new_blob_stor};
+use lib::blob_stor::{BlobStor};
 use lib::hash::Hash;
 use lib::fs::list_file::list_file;
 use lib::fs::save_file::save_file;
@@ -29,7 +29,7 @@ impl HeadManager {
         let path_blob = make_path(&base_path, "blob");              //katalog na bloby
         let path_head = make_path(&base_path, "head");              //katalog z aktualnymi head-ami
         
-        let stor = new_blob_stor(path_blob, max_file);
+        let stor = BlobStor::new_blob_stor(path_blob, max_file);
 
         let last_head = read_last(&path_head, &stor);
 
