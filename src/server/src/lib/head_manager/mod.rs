@@ -58,13 +58,12 @@ impl HeadManager {
     }
 
     fn test_write(&self) -> Hash {
-        println!("testuję coś se tam");
         
         let empty_dir = Ionode::new_empty_dir(&self.stor);
         let hash = empty_dir.hash();
 
         let path = Iopath::new(vec!("testowy".to_string()));
-        let new_content = "content".as_bytes();
+        let new_content = "content inny".as_bytes();
         let new_item = empty_dir.new_file(path, new_content);
 
         hash
@@ -74,7 +73,6 @@ impl HeadManager {
 
         match self.stor.get(&hash) {
             Some(dane) => {
-                println!("odczytany obiekt {:?}", dane);
                 let dir = Ionode::deserialize(hash, &self.stor, dane.as_slice());
             },
             None => {

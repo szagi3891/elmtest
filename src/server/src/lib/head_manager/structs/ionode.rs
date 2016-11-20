@@ -66,15 +66,11 @@ impl Ionode {
         }   
     }
     
-    //metody operujące na tym nodzie
-    
     pub fn new_file(&self, path: Iopath, data: &[u8]) -> IonodeResult<Ionode> {
         
         match self.content {
             IonodeContent::Dir(ref map_dir) => {
-                
-                //map_dir - HashMap<String, Hash>
-                
+
                 match path.head() {
 
                     Some((first_item, rest_path)) => {
@@ -88,15 +84,25 @@ impl Ionode {
 
 
                         } else {
-                            
-                            unimplemented!();
-                            //jeśli jeden element, to to możesz się zająć tworzeniem tego nowego pliku
-                            
-                            //upewnij się że nie ma wpisu o tym pliku w tym katalogu
-                            
-                                //self.stor.set();  //wrzuć do stora ten plik
-                                //map_dir.get(&rest_path)
-                                //zwróc nowy Ionode
+
+                            let data_hash = self.stor.set(data);    
+                            let mut map_dir_clone = map_dir.clone();
+
+                            if map_dir_clone.insert(first_item, data_hash).is_none() {
+
+                                let new_content = IonodeContent::Dir(map_dir_clone);
+                                let new_content_serialize = serialize(&new_content);
+                                let new_content_hash = self.stor.set(&new_content_serialize);
+
+                                return Ok(Ionode {
+                                    stor: self.stor.clone(),
+                                    self_hash: new_content_hash,
+                                    content: new_content,
+                                });
+
+                            } else {
+                                unimplemented!();           //TODO - zwrócić błąd użytkownika że taki element już istnieje
+                            }
                         }
                     },
 
@@ -111,10 +117,6 @@ impl Ionode {
                 unimplemented!();       //TODO - trzeba rzucić błędem że ten węzeł nie jest katalogiem
             }
         }
-        
-        //potrzebna będzie metoda, load from hash -> zwraca nowego ionode lub błąd
-        
-        unimplemented!();       //TODO
     }
 }
 
