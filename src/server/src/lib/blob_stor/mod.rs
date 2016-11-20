@@ -8,45 +8,46 @@ mod driver;
 mod file_counter;
 mod blob_stor_disk;
 
-trait BlobStorTrait {
-    fn set(&self, &[u8]) -> Hash;
-    fn get(&self, &Hash) -> Option<Vec<u8>>;
+//TODO
+//http://www.ncameron.org/blog/abstract-return-types-aka-%60impl-trait%60/
+
+
+#[derive(Clone)]
+enum BlobStorEnum {
+    Disk(BlobStorDisk),
+    //TODO - dodać driver mokujący na potrzeby testów
 }
 
+
+#[derive(Clone)]
 pub struct BlobStor {
-    inner: Box<BlobStorTrait + Send + Sync>
+    inner: BlobStorEnum
 }
+
 
 impl BlobStor {
-        
+
     pub fn new_blob_stor(base_path: PathBuf, max_file: u32) -> BlobStor {
         BlobStor {
-            inner: BlobStorDisk::new(base_path, max_file)
+            inner: BlobStorEnum::Disk(
+                BlobStorDisk::new(base_path, max_file)
+            )
         }
     }
     
     pub fn get(&self, hash: &Hash) -> Option<Vec<u8>> {
-        self.get(hash)
+        match self.inner {
+            BlobStorEnum::Disk(ref driver) => {
+                driver.get(hash)
+            }
+        }
     }
     
     pub fn set(&self, content: &[u8]) -> Hash {
-        self.set(content)
-    }
-    
-    pub fn clone(&self) -> BlobStor {
-        BlobStor {
-            inner: self.inner.clone()
+        match self.inner {
+            BlobStorEnum::Disk(ref driver) => {
+                driver.set(content)
+            }
         }
-    }
-}
-
-
-impl BlobStorTrait for BlobStorDisk {
-    fn get(&self, hash: &Hash) -> Option<Vec<u8>> {
-        self.get(hash)
-    }
-    
-    fn set(&self, content: &[u8]) -> Hash {
-        self.set(content)
     }
 }

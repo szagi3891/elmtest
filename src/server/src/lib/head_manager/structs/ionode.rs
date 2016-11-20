@@ -94,10 +94,8 @@ impl Ionode {
                                 let new_content_serialize = serialize(&new_content);
                                 let new_content_hash = self.stor.set(&new_content_serialize);
 
-                                let stor = self.stor;
-                                
                                 return Ok(Ionode {
-                                    stor: stor,
+                                    stor: self.stor.clone(),
                                     self_hash: new_content_hash,
                                     content: new_content,
                                 });

@@ -14,23 +14,23 @@ pub struct BlobStorDisk {
 
 impl BlobStorDisk {
 
-    pub fn new(base_path: PathBuf, max_file: u32) -> Box<BlobStorDisk> {
+    pub fn new(base_path: PathBuf, max_file: u32) -> BlobStorDisk {
 
         let driver = DriverUninit::new(base_path);
 
-        Box::new(BlobStorDisk {
+        BlobStorDisk {
             root : Dir::new_uninit(driver, max_file),
-        })
+        }
     }
 
-    fn get_str(&self, hash_str: &str) -> Option<Vec<u8>> {
+    pub fn get_str(&self, hash_str: &str) -> Option<Vec<u8>> {
         
         let hash_slice = hash_str.as_bytes();
         let hash = Hash::from_bytes(hash_slice);
         self.root.get(&hash)
     }
     
-    fn get(&self, hash: &Hash) -> Option<Vec<u8>> {
+    pub fn get(&self, hash: &Hash) -> Option<Vec<u8>> {
         self.root.get(&hash)
     }
   
@@ -40,7 +40,7 @@ impl BlobStorDisk {
     }
 */
 
-    fn set(&self, content: &[u8]) -> Hash {
+    pub fn set(&self, content: &[u8]) -> Hash {
                 
         let mut hasher = Sha1::new();
         
@@ -53,11 +53,5 @@ impl BlobStorDisk {
         self.root.set(&hash, content);
         
         hash
-    }
-    
-    fn make_clone(&self) -> Box<BlobStorDisk> {
-        Box::new(BlobStorDisk {
-            root: self.root.clone()
-        })
     }
 }
