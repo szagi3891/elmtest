@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use lib::blob_stor::BlobStor;
-use lib::blob_stor::hash::Hash;
+use lib::hash::Hash;
 use lib::head_manager::structs::ioerror::IonodeResult;
 use lib::head_manager::structs::iopath::Iopath;
 

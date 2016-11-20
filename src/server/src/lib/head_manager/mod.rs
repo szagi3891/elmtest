@@ -7,7 +7,7 @@ use chrono::offset::utc::UTC;
 use std::collections::HashSet;
 
 use lib::blob_stor::{BlobStor, new_blob_stor};
-use lib::blob_stor::hash::Hash;
+use lib::hash::Hash;
 use lib::fs::list_file::list_file;
 use lib::fs::save_file::save_file;
 use lib::fs::get_file::get_file;

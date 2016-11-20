@@ -1,5 +1,5 @@
 use lib::blob_stor::BlobStor;
-use lib::blob_stor::hash::Hash;
+use lib::hash::Hash;
 
 pub struct Head {
     self_hash: Hash,

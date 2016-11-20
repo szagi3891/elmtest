@@ -5,3 +5,5 @@ pub mod get_file_type;
 pub mod head_manager;
 pub mod blob_stor;
 pub mod fs;
+pub mod hash;
+pub mod hex;

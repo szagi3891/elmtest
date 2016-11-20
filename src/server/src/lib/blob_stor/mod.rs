@@ -2,16 +2,14 @@ use std::path::PathBuf;
 use crypto::digest::Digest;
 use crypto::sha1::Sha1;
 
-use lib::blob_stor::hash::Hash;
+use lib::hash::Hash;
 use lib::blob_stor::dir::Dir;
 use lib::blob_stor::driver::DriverUninit;
 
-
 mod dir;
-pub mod hash;
 mod driver;
 mod file_counter;
-mod hex;
+
 
 trait BlobStorTrait {
     fn set(&self, &[u8]) -> Hash;

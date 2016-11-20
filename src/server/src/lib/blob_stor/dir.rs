@@ -3,7 +3,7 @@ use std::sync::Arc;
 use std::mem::replace;
 use std::collections::HashMap;
 
-use lib::blob_stor::hash::Hash;
+use lib::hash::Hash;
 use lib::blob_stor::driver::{DriverUninit, DriverInitResult, DriverFiles, DriverDir};
 use lib::blob_stor::file_counter::FileCounter;
 

@@ -2,7 +2,7 @@ use std::path::PathBuf;
 use std::str;
 use std::u8;
 
-use lib::blob_stor::hex::to_hex;
+use lib::hex::to_hex;
 
 #[derive(RustcDecodable, RustcEncodable, Clone)]
 pub struct Hash {
