@@ -54,4 +54,10 @@ impl BlobStorDisk {
         
         hash
     }
+    
+    fn make_clone(&self) -> Box<BlobStorDisk> {
+        Box::new(BlobStorDisk {
+            root: self.root.clone()
+        })
+    }
 }
