@@ -22,7 +22,7 @@ impl Head {
 
         Head {
             self_hash: head_hash,
-            stor: *stor.clone(),
+            stor: stor.clone(),
             root: root,
             version: version,
         }
@@ -61,7 +61,7 @@ impl Head {
 
                 Head {
                     self_hash: self_hash,
-                    stor: *stor.clone(),
+                    stor: stor.clone(),
                     root: Hash::from_bytes(head),
                     version: version_number,
                 }

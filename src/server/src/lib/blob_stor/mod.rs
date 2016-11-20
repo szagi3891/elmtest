@@ -1,76 +1,51 @@
 use std::path::PathBuf;
-use crypto::digest::Digest;
-use crypto::sha1::Sha1;
 
 use lib::hash::Hash;
-use lib::blob_stor::dir::Dir;
-use lib::blob_stor::driver::DriverUninit;
+use lib::blob_stor::blob_stor_disk::{BlobStorDisk};
 
 mod dir;
 mod driver;
 mod file_counter;
-
+mod blob_stor_disk;
 
 trait BlobStorTrait {
     fn set(&self, &[u8]) -> Hash;
     fn get(&self, &Hash) -> Option<Vec<u8>>;
 }
 
-pub type BlobStor = Box<BlobStorTrait + Send + Sync>;
-
-pub fn new_blob_stor(base_path: PathBuf, max_file: u32) -> BlobStor {
-    BlobStorDisk::new(base_path, max_file)
+pub struct BlobStor {
+    inner: Box<BlobStorTrait + Send + Sync>
 }
 
-
-#[derive(Clone)]
-struct BlobStorDisk {
-    root: Dir,
-}
-
-impl BlobStorDisk {
-
-    fn new(base_path: PathBuf, max_file: u32) -> Box<BlobStorDisk> {
-
-        let driver = DriverUninit::new(base_path);
-
-        Box::new(BlobStorDisk {
-            root : Dir::new_uninit(driver, max_file),
-        })
-    }
-
-    fn get_str(&self, hash_str: &str) -> Option<Vec<u8>> {
-        
-        let hash_slice = hash_str.as_bytes();
-        let hash = Hash::from_bytes(hash_slice);
-        self.root.get(&hash)
+impl BlobStor {
+    pub fn get(&self, hash: &Hash) -> Option<Vec<u8>> {
+        self.get(hash)
     }
     
-    fn get(&self, hash: &Hash) -> Option<Vec<u8>> {
-        self.root.get(&hash)
+    pub fn set(&self, content: &[u8]) -> Hash {
+        self.set(content)
     }
-  
-/*
-    pub fn set_str(&self, content: &str) -> Hash {
-        //TODO
-    }
-*/
-
-    fn set(&self, content: &[u8]) -> Hash {
-                
-        let mut hasher = Sha1::new();
-        
-        //hasher.input_str(content);
-        hasher.input(content);
-        
-        let hex = hasher.result_str();
-        
-        let hash = Hash::from_bytes(hex.as_bytes());
-        self.root.set(&hash, content);
-        
-        hash
+    
+    pub fn clone(&self) -> BlobStor {
+        BlobStor {
+            inner: self.inner.clone()
+        }
     }
 }
+
+//pub type BlobStor = Box<BlobStorTrait + Send + Sync>;
+
+pub fn new_blob_stor(base_path: PathBuf, max_file: u32) -> BlobStor {
+    BlobStor {
+        inner: BlobStorDisk::new(base_path, max_file)
+    }
+}
+
+
+/*
+pub fn clone_stor(stor: &BlobStor) -> BlobStor {
+}
+*/
 
 impl BlobStorTrait for BlobStorDisk {
     fn get(&self, hash: &Hash) -> Option<Vec<u8>> {

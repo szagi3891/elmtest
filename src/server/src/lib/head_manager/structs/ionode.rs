@@ -35,7 +35,7 @@ impl Ionode {
         let empty_hash = stor.set(empty_serialized.as_slice());
         
         Ionode {
-            stor: *stor.clone(),
+            stor: stor.clone(),
             self_hash: empty_hash,
             content: content,
         }
@@ -52,7 +52,7 @@ impl Ionode {
         if header.len() == 1 && header[0] == 48 {           //Katalog
             
             return Ionode {
-                stor: *stor.clone(),
+                stor: stor.clone(),
                 self_hash: hash_addr,
                 content: deserialize_content_dir(rest),
             };
@@ -97,7 +97,7 @@ impl Ionode {
                                 let stor = self.stor;
                                 
                                 return Ok(Ionode {
-                                    stor: stor.clone(),
+                                    stor: stor,
                                     self_hash: new_content_hash,
                                     content: new_content,
                                 });
