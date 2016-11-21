@@ -2,6 +2,8 @@ use std::path::PathBuf;
 
 use lib::blob_stor::BlobStor;
 
+//TODO - dodać to jako test ...
+//trzeba będzie zamokować operacje dyskowe dla tego stora ...
 
 pub fn test(path: PathBuf) {
 
