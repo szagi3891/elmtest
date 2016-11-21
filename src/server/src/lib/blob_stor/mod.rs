@@ -10,7 +10,12 @@ mod blob_stor_disk;
 
 //TODO
 //http://www.ncameron.org/blog/abstract-return-types-aka-%60impl-trait%60/
-
+/*
+    let bytes: Vec<u8> = vec![
+        0xFF, 0,
+        0xAA
+    ];
+*/
 
 #[derive(Clone)]
 enum BlobStorEnum {

@@ -1,6 +1,4 @@
 use std::path::PathBuf;
-use std::str;
-use std::u8;
 
 use lib::hex::to_hex;
 
@@ -10,27 +8,25 @@ pub struct Hash {
 }
 
 impl Hash {
-    pub fn new(hash: [u8; 40]) -> Hash {
+    pub fn new(hash: [u8; 20]) -> Hash {
         
         Hash {
-            hash: convert_to_hex(&hash[..])
+            hash: hash
         }
     }
-    
+                                                                //TODO zmienić potem nazwę na from_bytes
     pub fn from_bytes(hash: &[u8]) -> Hash {
         
-        if hash.len() != 40 {
+        if hash.len() != 20 {
             panic!("nieprawidłowa długość {:?}", hash.len());
         }
         
+        let mut out = [0; 20];
+        out.copy_from_slice(&hash);
+        
         Hash {
-            hash: convert_to_hex(hash)
+            hash: out
         }
-    }
-    
-    pub fn from_vec(data: &Vec<u8>) -> Hash {
-        let data_slice = data.as_slice();
-        Hash::from_bytes(data_slice)
     }
 
     pub fn add_to_path(&self, path: &mut PathBuf) {
@@ -49,37 +45,16 @@ impl Hash {
     }
     
                                                 //TODO - dobrze byłoby to zrobić bez tylu alokacji przy serializowaniu danych
-    pub fn to_string(&self) -> String {
+    pub fn to_hex(&self) -> String {
         
         to_hex(&self.hash)
     }
     
+                                                //TODO - zmienić potem znowu na seiralize
     pub fn serialize(&self, out: &mut Vec<u8>) {        
 
-        let hash_hex = to_hex(&self.hash);
-
-        for item in hash_hex.as_bytes() {
+        for item in self.hash.iter() {
             out.push(*item);
         }
     }
-}
-
-fn convert_to_hex(hash: &[u8]) -> [u8; 20] {
-    
-    let mut out = [0; 20];
-    
-    for index in 0..20 {
-        let (_, tail) = hash.split_at(2 * index);
-        let (range, _) = tail.split_at(2);
-        
-        out[index] = from_hex(range);
-    }
-    
-    out
-}
-
-fn from_hex(slice: &[u8]) -> u8 {
-    
-    let slice_str = str::from_utf8(&slice).unwrap();
-    u8::from_str_radix(slice_str, 16).unwrap()
 }

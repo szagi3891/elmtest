@@ -149,9 +149,8 @@ fn deserialize_content_dir(data_in: &[u8]) -> IonodeContent {
 
 fn create_item(line: &[u8]) -> (String, Hash) {
     
-    let hash_data = &line[0..40];
-    //40 pomijamy - to jest spacja
-    let name = &line[41..];
+    let hash_data = &line[0..20];
+    let name = &line[20..];
 
     let hash = Hash::from_bytes(hash_data);
     
@@ -218,7 +217,6 @@ fn serialize_dir(list: &HashMap<String, Hash>, out: &mut Vec<u8>) {
         let val = list.get(key_name).unwrap();
 
         val.serialize(out);
-        out.push(32);
 
         for item in key_name.as_bytes() {
             out.push(*item);

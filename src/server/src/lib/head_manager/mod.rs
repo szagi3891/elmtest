@@ -8,6 +8,7 @@ use std::collections::HashSet;
 
 use lib::blob_stor::{BlobStor};
 use lib::hash::Hash;
+use lib::hex::{convert_from_hex};
 use lib::fs::list_file::list_file;
 use lib::fs::save_file::save_file;
 use lib::fs::get_file::get_file;
@@ -94,9 +95,7 @@ fn read_last(path_head: &PathBuf, stor: &BlobStor) -> Head {
         
         let (_, the_last_path) = find_the_latest(list);
 
-        let last_data = get_file(the_last_path.as_path()).unwrap();
-        let head_hash = Hash::from_vec(&last_data);
-
+        let head_hash = read_head_hash(the_last_path);
         let head_data = stor.get(&head_hash).unwrap();
         
         return Head::deserialize(head_hash, stor, head_data.as_slice());
@@ -114,10 +113,20 @@ fn read_last(path_head: &PathBuf, stor: &BlobStor) -> Head {
     let mut path_save = path_head.clone();
     path_save.push(file_name);
 
-    save_file(path_save.as_path(), head.get_hash().to_string().as_bytes()).unwrap();
+    save_file(path_save.as_path(), head.get_hash().to_hex().as_bytes()).unwrap();
     
     head
 }
+
+fn read_head_hash(the_last_path: PathBuf) -> Hash {
+    
+    let data = get_file(the_last_path.as_path()).unwrap();
+    let data_slice = data.as_slice();   
+    let data_bytest = convert_from_hex(data_slice);
+    
+    Hash::new(data_bytest)
+}
+
 
 fn find_the_latest(list: Vec<PathBuf>) -> (u32, PathBuf) {
 

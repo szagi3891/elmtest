@@ -3,6 +3,7 @@ use crypto::digest::Digest;
 use crypto::sha1::Sha1;
 
 use lib::hash::Hash;
+use lib::hex::{convert_from_hex};
 use lib::blob_stor::dir::Dir;
 use lib::blob_stor::driver::DriverUninit;
 
@@ -26,7 +27,8 @@ impl BlobStorDisk {
     pub fn get_str(&self, hash_str: &str) -> Option<Vec<u8>> {
         
         let hash_slice = hash_str.as_bytes();
-        let hash = Hash::from_bytes(hash_slice);
+        let hash_bin = convert_from_hex(hash_slice);
+        let hash = Hash::new(hash_bin);
         self.root.get(&hash)
     }
     
@@ -49,7 +51,9 @@ impl BlobStorDisk {
         
         let hex = hasher.result_str();
         
-        let hash = Hash::from_bytes(hex.as_bytes());
+        let hash_bin = convert_from_hex(hex.as_bytes());
+        
+        let hash = Hash::new(hash_bin);
         self.root.set(&hash, content);
         
         hash

@@ -7,7 +7,7 @@ use lib::blob_stor::driver::init_dir::{init_dir, DriverInitDirResult};
 use lib::blob_stor::driver::set_file::set_file;
 use lib::fs::get_file::get_file;
 use lib::fs::list_file::list_file;
-use lib::hex::to_hex;
+use lib::hex::{to_hex, convert_from_hex};
 
 mod init_dir;
 mod set_file;
@@ -115,7 +115,8 @@ impl DriverFiles {
 
             let item_name = item_from_path.file_name().unwrap().to_str().unwrap();
             
-            let hash = Hash::from_bytes(item_name.as_bytes());
+            let item_converted = convert_from_hex(item_name.as_bytes());
+            let hash = Hash::new(item_converted);
             let prefix = hash.get_prefix(self.level);
             
             let mut path_to = self.path.clone();
